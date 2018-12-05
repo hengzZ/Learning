@@ -4,7 +4,7 @@
 人们的每次思考并不都是从零开始的。在阅读这篇文章时，你基于对前面的文字的理解来理解你目前阅读到的文字。RNN 解决了这个问题。RNN 是包含循环的网络，允许信息的持久化。<br>
 
 在普通的 RNN 中，重复模块结构非常简单，例如只有一个 tanh 层：<br>
-<img src="http://github.com/hengzZ/Learning/blob/master/LearnTensorFlow/pics/rnn.jpg" width = "60%" height = "26%" div align=center/> <br>
+<p align="center"><img src="pics/rnn.jpg" width="480" height="320"></p>
 RNN 模型涉及到一个问题： 相关信息和当前预测位置之间的间隔大小问题。
 
 
@@ -14,7 +14,7 @@ RNN 模型涉及到一个问题： 相关信息和当前预测位置之间的间
 **LSTM**，全称为长短期记忆网络 (Long Short Term Memory networks) ，是一种特殊的 RNN，能够学习到长期依赖关系。LSTM 通过刻意的设计来避免长期依赖问题。记住长期的信息在实践中是 LSTM 的默认行为，而非需要付出很大代价才能获得的能力！
 
 LSTM 的重复模块中有 4 个神经网络层，并且他们之间的交互非常特别： <br>
-<img src="http://github.com/hengzZ/Learning/blob/master/LearnTensorFlow/pics/lstm.jpg" width = "60%" height = "26%" div align=center/> <br>
+<p align="center"><img src="pics/lstm.jpg" width="480" height="320"></p>
 
 
 ## LSTM 核心思想
