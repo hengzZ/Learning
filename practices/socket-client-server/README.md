@@ -1,5 +1,6 @@
 # tcp/udp transmission #
-
+socket programing <br>
+Use linux socket to implement client/server
 
 ## tcp ##
 A clent program that can request a file from the server program.   
@@ -10,7 +11,6 @@ Usage:
 $ ./tcp_server
 $ ./tcp_client [host name] ../testfile.txt
 ```
-
 
 ## udp ##
 A UDP server receives message from client and replys with same message   
@@ -28,4 +28,3 @@ $ ./udp_server
 $ ./udp_clent
 $ hello
 ```
-

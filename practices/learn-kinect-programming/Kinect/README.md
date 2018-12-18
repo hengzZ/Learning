@@ -7,6 +7,6 @@ Opencv3.0
 
 ## Reference
 Samples C++ of SDK Brower:  
-    * Color Basics-D2D  
-    * Depth Basics-D2D  
-    * Infrared Basics-D2D  
+* Color Basics-D2D  
+* Depth Basics-D2D  
+* Infrared Basics-D2D  
