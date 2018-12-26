@@ -129,8 +129,11 @@ reference:
 
 #### 3. supplement knowledge
 ###### **BatchNorm**
-<img src="pics/batchNorm.jpg" width="45%"> <br>
-variance_epsilon: A small float number to avoid dividing by 0.
+**tf.nn** <br>
+<img src="pics/batchNorm.jpg" width="50%"> <br>
+variance_epsilon: A small float number to avoid dividing by 0. <br>
+**mkldnn** <br>
+<img src="pics/batchNorm_mkl.jpg" width="65%"> <br>
 
 ###### **tf.add(a, b) 与 a+b**
 在神经网络前向传播的过程中，经常可见如下两种形式的代码:
