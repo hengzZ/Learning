@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
 
 ## TensorFlow - Variable
-在 Tensorflow 中，使用变量前首先要定义变量，这一点是与 Python 的变量使用理念不同。
+**在 Tensorflow 中，使用变量前首先要定义变量，这一点是与 Python 的变量使用理念不同。**
 ```python
 import tensorflow as tf
 
@@ -113,7 +113,7 @@ with tf.Session() as sess:
         sess.run(update)
         print(sess.run(state))
 ```
-在 TensorFlow 中，变量（variable）、常量(constant)、操作符(operator)、初始化操作（initialize）等等任何的值和操作在使用之前都要首先声明！!
+**在 TensorFlow 中，变量（variable）、常量(constant)、操作符(operator)、初始化操作（initialize）等等任何的值和操作在使用之前都要首先声明！!**
 
 
 ## TensorFlow - Placeholder
@@ -261,6 +261,10 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 note: Remember to define the same dtype and shape when restoring.
+
+
+## TensorFlow - Create your first CNN
+Quick Start: [your_first_cnn](your_first_cnn.md)
 
 
 # 迁移学习
