@@ -57,15 +57,16 @@ def Pooling(name, bottom, kernel_h, kernel_w, stride_h, stride_w, pool_type, pad
 		return pool
 
 
-def BatchNorm(name, bottom, epsilon, with_type, scale=1.0):
+def BatchNorm(name, bottom, epsilon, with_type, scale_out=1.0):
 	"""
 	variance_epsilon: A small float number to avoid dividing by 0.
 	# tf.nn.batch_normalization(x, mean, variance, offset, scale, variance_epsilon, name=None)
 	"""
 	with tf.variable_scope(name):
-		mean = tf.Variable(tf.random_normal([bottom.shape[1].value, bottom.shape[2].value, bottom.shape[3].value]))
-		variance = tf.Variable(tf.random_normal([bottom.shape[1].value, bottom.shape[2].value, bottom.shape[3].value]))
-		offset = tf.Variable(tf.random_normal([bottom.shape[1].value, bottom.shape[2].value, bottom.shape[3].value]))
+		mean = tf.Variable(tf.random_normal([bottom.shape[3].value]))
+		variance = tf.Variable(tf.random_normal([bottom.shape[3].value]))
+		scale = tf.Variable(tf.random_normal([bottom.shape[3].value]))
+		offset = tf.Variable(tf.random_normal([bottom.shape[3].value]))
 		batch_norm = tf.nn.batch_normalization(bottom, mean=mean, variance=variance, offset=offset, scale=scale, variance_epsilon=epsilon)
 		if ("relu" == with_type.lower()):
 			relu = tf.nn.relu(batch_norm)
@@ -127,10 +128,16 @@ reference:
 1. https://github.com/tensorflow/models/blob/master/official/resnet/resnet_model.py
 
 #### 3. supplement knowledge
-**BatchNorm** <br>
+###### **BatchNorm**
 <img src="pics/batchNorm.jpg" width="45%"> <br>
 variance_epsilon: A small float number to avoid dividing by 0.
 
+###### **tf.add(a, b) 与 a+b**
+在神经网络前向传播的过程中，经常可见如下两种形式的代码:
+* tf.add(tf.matmul(x, w), b)
+* tf.matmul(x, w) + b
+
+二者并没有差别. 运算符重载的形式 a+b, 会在内部转换为 a.\_\_add__(b), 而 a.\_\_add__(b) 会再一次地映射为 tf.add.
 
 ## Tensorflow - High Level Library
 * Keras
