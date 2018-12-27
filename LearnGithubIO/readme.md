@@ -31,7 +31,7 @@ git commit -m "index"
 git push
 ```
 #### 选择一个主题风格
-打开项目设置(Settings)
+打开项目设置(Settings): <br>
 <img src="pics/github_io_theme.png" width="60%">
 
 博客： http://hengzZ.github.io
