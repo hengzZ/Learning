@@ -10,7 +10,7 @@
 github.io 是完全基于 github 创建的，其本质上是在你的 github 账户下创建一个特殊的 repo.
 
 #### 创建 \<username>.github.io 仓库
-**其中<username>替换成你的 github 账户名** <br>
+**其中 username 替换成你的 github 账户名** <br>
 <img src="pics/github_io_repo.png" width="60%">
 
 #### 初始化仓库
