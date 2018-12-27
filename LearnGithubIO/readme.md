@@ -47,8 +47,17 @@ git clone https://github.com/Huxpro/huxpro.github.io.git
 #### 修改配置
 基于 Jekyll 的博客网站，有一个非常重要的配置文件_config.yml.
 ```html
-
+# Site settings
+title: Peter
+SEOTitle: 志恒的博客 | Peter
+header-img: img/home-bg.jpg
+email: zh632299795@gmail.com
+description: "关于设计与梦想 | 志恒，Software Engineer | 这里是 @志恒zZ 的个人博客，与你一起探索世界。"
+keyword: "@志恒zZ, 个人网站, 互联网, Web, Software Engineer, designer dream"
+url: "https://zhiheng.me"  # your host, for absolute URL
+baseurl: ""  # for example, '/blog' if your blog hosted on 'host/blog'
 ```
+其他配置及信息，请逐个查看文件并修改。
 
 
 ## 编写发布博客
