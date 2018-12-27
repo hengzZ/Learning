@@ -128,14 +128,14 @@ reference:
 1. https://github.com/tensorflow/models/blob/master/official/resnet/resnet_model.py
 
 #### 3. supplement knowledge
-###### **BatchNorm**
-**tf.nn** <br>
+###### **1. BatchNorm**
+**▪ tf.nn:** <br>
 <img src="pics/batchNorm.jpg" width="50%"> <br>
 variance_epsilon: A small float number to avoid dividing by 0. <br>
-**mkldnn** <br>
+**▪ mkldnn:** <br>
 <img src="pics/batchNorm_mkl.jpg" width="65%"> <br>
 
-###### **tf.add(a, b) 与 a+b**
+###### **2. tf.add(a, b) 与 a+b**
 在神经网络前向传播的过程中，经常可见如下两种形式的代码:
 * tf.add(tf.matmul(x, w), b)
 * tf.matmul(x, w) + b
