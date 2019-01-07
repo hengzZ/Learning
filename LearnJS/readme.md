@@ -2,6 +2,7 @@
 * For basic syntax, please read: [my another note](../LearnHTML/js_notes.md)
 * **This note contains some advance feature:**
 
+
 ## 1. => 函数
 ES6 标准新增了一种新的函数：Arrow Function（箭头函数）
 
@@ -82,4 +83,135 @@ var obj = {
     }
 };
 obj.getAge(2015); // 25
+```
+
+
+## 2. JavaScript 对象
+#### 构造方法 （Constructor）
+* 方法一：**var**
+```html
+<html>
+   <head>
+      <title>User-defined objects</title>
+      
+      <script type="text/javascript">
+         var book = new Object();   // Create the object
+         book.subject = "Perl"; // Assign properties to the object
+         book.author  = "Mohtashim";
+      </script>
+      
+   </head>
+   <body>
+   
+      <script type="text/javascript">
+         document.write("Book name is : " + book.subject + "<br>");
+         document.write("Book author is : " + book.author + "<br>");
+      </script>
+   
+   </body>
+</html>
+```
+* 方法二: **this**
+```html
+<html>
+   <head>
+   <title>User-defined objects</title>
+   
+      <script type="text/javascript">
+         function book(title, author){
+            this.title = title; 
+            this.author  = author;
+         }
+      </script>
+      
+   </head>
+   <body>
+   
+      <script type="text/javascript">
+         var myBook = new book("Perl", "Mohtashim");
+         document.write("Book title is : " + myBook.title + "<br>");
+         document.write("Book author is : " + myBook.author + "<br>");
+      </script>
+      
+   </body>
+</html>
+```
+
+#### 成员函数定义 （Methods）
+* 定义方式: **this**
+```html
+<html>
+   <head>
+   <title>User-defined objects</title>
+   
+      <script type="text/javascript">
+      
+         // define a function which will work as a method
+         function addPrice(amount){
+            this.price = amount; 
+         }
+         
+         function book(title, author){
+            this.title = title;
+            this.author  = author;
+            this.addPrice = addPrice; // assign that method as property. (将函数名赋给成员)
+         }
+         
+      </script>
+      
+   </head>
+   <body>
+   
+      <script type="text/javascript">
+         var myBook = new book("Perl", "Mohtashim");
+         myBook.addPrice(100);
+         
+         document.write("Book title is : " + myBook.title + "<br>");
+         document.write("Book author is : " + myBook.author + "<br>");
+         document.write("Book price is : " + myBook.price + "<br>");
+      </script>
+      
+   </body>
+</html>
+```
+
+#### 'with' 语法特性
+被传递给 with 的对象，将成为后续局部块的默认对象，变量引用时优先被考虑为对象的成员变量：
+```html
+<html>
+   <head>
+   <title>User-defined objects</title>
+   
+      <script type="text/javascript">
+      
+         // define a function which will work as a method
+         function addPrice(amount){
+            with(this){
+               price = amount; // this statement uses price instead of this.price （price 调用等价于 this.price, 其中 this 这个对象在书写中被省略）
+            }
+         }
+         
+         function book(title, author){
+            this.title = title;
+            this.author  = author;
+            this.price = 0;
+            this.addPrice = addPrice; // assign that method as property. (将函数名赋给成员)
+         }
+         
+      </script>
+      
+   </head>
+   <body>
+   
+      <script type="text/javascript">
+         var myBook = new book("Perl", "Mohtashim");
+         myBook.addPrice(100);
+         
+         document.write("Book title is : " + myBook.title + "<br>");
+         document.write("Book author is : " + myBook.author + "<br>");
+         document.write("Book price is : " + myBook.price + "<br>");
+      </script>
+      
+   </body>
+</html>
 ```
