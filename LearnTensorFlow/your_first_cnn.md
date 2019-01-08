@@ -53,7 +53,7 @@ def Pooling(name, bottom, kernel_h, kernel_w, stride_h, stride_w, pool_type, pad
 	"""
 	with tf.variable_scope(name):
 		pool = tf.nn.pool(bottom, window_shape=[kernel_h,kernel_w], strides=[stride_h, stride_w],
-						pooling_type=pool_type, padding=pad_type)
+				pooling_type=pool_type, padding=pad_type)
 		return pool
 
 
@@ -94,7 +94,7 @@ def make_fake_input(batch_size, input_height, input_width, input_channel):
 	for i in xrange(batch_size):
 		images[i, 0:im.shape[0], 0:im.shape[1], :] = im
 		#channel_swap = (0, 3, 1, 2)  # caffe
-		#images = images.transpose(channel_swap)
+		#images = np.transpose(images, channel_swap)
 		#cv2.imwrite("test.jpg", im)
 	return images
 
@@ -109,68 +109,69 @@ def create_model(images):
 	res2_1b2 = Convolution("layer2_block0_sub2_sub2_conv_Conv2D", res2_1b2, 64, 3, 3, 1, 1, "SAME", "relu")
 	res2_1b2 = Convolution("layer2_block0_sub3_sub3_conv_Conv2D", res2_1b2, 256, 1, 1, 1, 1, "SAME", "none")
 	res2_1b1 = Convolution("layer2_block0_shortcut_sub_sc_Conv2D", res1_1, 256, 1, 1, 1, 1, "SAME", "none")
-	res2_1 = Sum("layer2_block0_shortcut_add", res2_1b1, res2_1b2, 1.0, 1.0, "none")
-	res2_1 = BatchNorm("layer2_block1_residual_bn_relu_FusedBatchNorm", res2_1, 0.0010000000475, "relu")
+	res2_1_sum = Sum("layer2_block0_shortcut_add", res2_1b1, res2_1b2, 1.0, 1.0, "none")
+	res2_1 = BatchNorm("layer2_block1_residual_bn_relu_FusedBatchNorm", res2_1_sum, 0.0010000000475, "relu")
 	#
 	res2_2b2 = Convolution("layer2_block1_sub1_sub1_conv_Conv2D", res2_1, 64, 1, 1, 1, 1, "SAME", "relu")
 	res2_2b2 = Convolution("layer2_block1_sub2_sub2_conv_Conv2D", res2_2b2, 64, 3, 3, 1, 1, "SAME", "relu")
 	res2_2b2 = Convolution("layer2_block1_sub3_sub3_conv_Conv2D", res2_2b2, 256, 1, 1, 1, 1, "SAME", "none")
-	res2_2 = Sum("layer2_block1_shortcut_add", res2_1, res2_2b2, 1.0, 1.0, "none")
-	res2_2 = BatchNorm("layer3_block0_common_bn_relu_FusedBatchNorm", res2_2, 0.0010000000475, "relu")
+	res2_2_sum = Sum("layer2_block1_shortcut_add", res2_1_sum, res2_2b2, 1.0, 1.0, "none")
+	res2_2 = BatchNorm("layer3_block0_common_bn_relu_FusedBatchNorm", res2_2_sum, 0.0010000000475, "relu")
 	# cfg[2]
 	res3_1b2 = Convolution("layer3_block0_sub1_sub1_conv_Conv2D", res2_2, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_1b2 = Convolution("layer3_block0_sub2_sub2_conv_Conv2D", res3_1b2, 128, 3, 3, 2, 2, "SAME", "relu")
 	res3_1b2 = Convolution("layer3_block0_sub3_sub3_conv_Conv2D", res3_1b2, 512, 1, 1, 1, 1, "SAME", "none")
 	res3_1b1 = Convolution("layer3_block0_shortcut_sub_sc_Conv2D", res2_2, 512, 1, 1, 2, 2, "SAME", "none")
-	res3_1 = Sum("layer3_block0_shortcut_add", res3_1b1, res3_1b2, 1.0, 1.0, "none")
-	res3_1 = BatchNorm("layer3_block1_residual_bn_relu_FusedBatchNorm", res3_1, 0.0010000000475, "relu")
+	res3_1_sum = Sum("layer3_block0_shortcut_add", res3_1b1, res3_1b2, 1.0, 1.0, "none")
+	res3_1 = BatchNorm("layer3_block1_residual_bn_relu_FusedBatchNorm", res3_1_sum, 0.0010000000475, "relu")
 	#
 	res3_2b2 = Convolution("layer3_block1_sub1_sub1_conv_Conv2D", res3_1, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_2b2 = Convolution("layer3_block1_sub2_sub2_conv_Conv2D", res3_2b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_2b2 = Convolution("layer3_block1_sub3_sub3_conv_Conv2D", res3_2b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_2 = Sum("layer3_block1_shortcut_add", res3_1, res3_2b2, 1.0, 1.0, "none")
-	res3_2 = BatchNorm("layer3_block2_residual_bn_relu_FusedBatchNorm", res3_2, 0.0010000000475, "relu")
+	res3_2_sum = Sum("layer3_block1_shortcut_add", res3_1_sum, res3_2b2, 1.0, 1.0, "none")
+	res3_2 = BatchNorm("layer3_block2_residual_bn_relu_FusedBatchNorm", res3_2_sum, 0.0010000000475, "relu")
 	# block 2 to 6
 	res3_3b2 = Convolution("layer3_block2_sub1_sub1_conv_Conv2D", res3_2, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_3b2 = Convolution("layer3_block2_sub2_sub2_conv_Conv2D", res3_3b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_3b2 = Convolution("layer3_block2_sub3_sub3_conv_Conv2D", res3_3b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_3 = Sum("layer3_block2_shortcut_add", res3_2, res3_3b2, 1.0, 1.0, "none")
-	res3_3 = BatchNorm("layer3_block3_residual_bn_relu_FusedBatchNorm", res3_3, 0.0010000000475, "relu")
+	res3_3_sum = Sum("layer3_block2_shortcut_add", res3_2_sum, res3_3b2, 1.0, 1.0, "none")
+	res3_3 = BatchNorm("layer3_block3_residual_bn_relu_FusedBatchNorm", res3_3_sum, 0.0010000000475, "relu")
 	res3_4b2 = Convolution("layer3_block3_sub1_sub1_conv_Conv2D", res3_3, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_4b2 = Convolution("layer3_block3_sub2_sub2_conv_Conv2D", res3_4b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_4b2 = Convolution("layer3_block3_sub3_sub3_conv_Conv2D", res3_4b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_4 = Sum("layer3_block3_shortcut_add", res3_3, res3_4b2, 1.0, 1.0, "none")
-	res3_4 = BatchNorm("layer3_block4_residual_bn_relu_FusedBatchNorm", res3_4, 0.0010000000475, "relu")
+	res3_4_sum = Sum("layer3_block3_shortcut_add", res3_3_sum, res3_4b2, 1.0, 1.0, "none")
+	res3_4 = BatchNorm("layer3_block4_residual_bn_relu_FusedBatchNorm", res3_4_sum, 0.0010000000475, "relu")
 	res3_5b2 = Convolution("layer3_block4_sub1_sub1_conv_Conv2D", res3_4, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_5b2 = Convolution("layer3_block4_sub2_sub2_conv_Conv2D", res3_5b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_5b2 = Convolution("layer3_block4_sub3_sub3_conv_Conv2D", res3_5b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_5 = Sum("layer3_block4_shortcut_add", res3_4, res3_5b2, 1.0, 1.0, "none")
-	res3_5 = BatchNorm("layer3_block5_residual_bn_relu_FusedBatchNorm", res3_5, 0.0010000000475, "relu")
+	res3_5_sum = Sum("layer3_block4_shortcut_add", res3_4_sum, res3_5b2, 1.0, 1.0, "none")
+	res3_5 = BatchNorm("layer3_block5_residual_bn_relu_FusedBatchNorm", res3_5_sum, 0.0010000000475, "relu")
 	res3_6b2 = Convolution("layer3_block5_sub1_sub1_conv_Conv2D", res3_5, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_6b2 = Convolution("layer3_block5_sub2_sub2_conv_Conv2D", res3_6b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_6b2 = Convolution("layer3_block5_sub3_sub3_conv_Conv2D", res3_6b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_6 = Sum("layer3_block5_shortcut_add", res3_5, res3_6b2, 1.0, 1.0, "none")
-	res3_6 = BatchNorm("layer3_block6_residual_bn_relu_FusedBatchNorm", res3_6, 0.0010000000475, "relu")
+	res3_6_sum = Sum("layer3_block5_shortcut_add", res3_5_sum, res3_6b2, 1.0, 1.0, "none")
+	res3_6 = BatchNorm("layer3_block6_residual_bn_relu_FusedBatchNorm", res3_6_sum, 0.0010000000475, "relu")
 	#
 	res3_7b2 = Convolution("layer3_block6_sub1_sub1_conv_Conv2D", res3_6, 128, 1, 1, 1, 1, "SAME", "relu")
 	res3_7b2 = Convolution("layer3_block6_sub2_sub2_conv_Conv2D", res3_7b2, 128, 3, 3, 1, 1, "SAME", "relu")
 	res3_7b2 = Convolution("layer3_block6_sub3_sub3_conv_Conv2D", res3_7b2, 512, 1, 1, 1, 1, "SAME", "none")
-	res3_7 = Sum("layer3_block6_shortcut_add", res3_6, res3_7b2, 1.0, 1.0, "none")
-	res3_7 = BatchNorm("layer4_block0_common_bn_relu_FusedBatchNorm", res3_7, 0.0010000000475, "relu")
+	res3_7_sum = Sum("layer3_block6_shortcut_add", res3_6_sum, res3_7b2, 1.0, 1.0, "none")
+	res3_7 = BatchNorm("layer4_block0_common_bn_relu_FusedBatchNorm", res3_7_sum, 0.0010000000475, "relu")
 	# cfg[3]
 	res4_1b2 = Convolution("layer4_block0_sub1_sub1_conv_Conv2D", res3_7, 256, 1, 1, 1, 1, "SAME", "relu")
 	res4_1b2 = Convolution("layer4_block0_sub2_sub2_conv_Conv2D", res4_1b2, 256, 3, 3, 2, 2, "SAME", "relu")
 	res4_1b2 = Convolution("layer4_block0_sub3_sub3_conv_Conv2D", res4_1b2, 1024, 1, 1, 1, 1, "SAME", "none")
 	res4_1b1 = Convolution("layer4_block0_shortcut_sub_sc_Conv2D", res3_7, 1024, 1, 1, 2, 2, "SAME", "none")
-	res4_1 = Sum("layer4_block0_shortcut_add", res4_1b1, res4_1b2, 1.0, 1.0, "none")
-	res4_1 = BatchNorm("layer4_block1_residual_bn_relu_FusedBatchNorm", res4_1, 0.0010000000475, "relu")
+	res4_1_sum = Sum("layer4_block0_shortcut_add", res4_1b1, res4_1b2, 1.0, 1.0, "none")
+	res4_1 = BatchNorm("layer4_block1_residual_bn_relu_FusedBatchNorm", res4_1_sum, 0.0010000000475, "relu")
 	#
 	res4_2b2 = Convolution("layer4_block1_sub1_sub1_conv_Conv2D", res4_1, 256, 1, 1, 1, 1, "SAME", "relu")
 	res4_2b2 = Convolution("layer4_block1_sub2_sub2_conv_Conv2D", res4_2b2, 256, 3, 3, 1, 1, "SAME", "relu")
 	res4_2b2 = Convolution("layer4_block1_sub3_sub3_conv_Conv2D", res4_2b2, 1024, 1, 1, 1, 1, "SAME", "none")
-	res4_2 = Sum("layer4_block1_shortcut_add", res4_1, res4_2b2, 1.0, 1.0, "none")
-	res4_2 = BatchNorm("layer4_block2_residual_bn_relu_FusedBatchNorm", res4_2, 0.0010000000475, "relu")
+	res4_2_sum = Sum("layer4_block1_shortcut_add", res4_1_sum, res4_2b2, 1.0, 1.0, "none")
+	res4_2 = BatchNorm("layer4_block2_residual_bn_relu_FusedBatchNorm", res4_2_sum, 0.0010000000475, "relu")
 	# ...
+	res_sum = res4_2_sum
 	res = res4_2
 	for i in range(29):
 		scope_name = "layer4_block{0}_sub1_sub1_conv_Conv2D".format(3+i)
@@ -180,33 +181,33 @@ def create_model(images):
 		scope_name = "layer4_block{0}_sub3_sub3_conv_Conv2D".format(3+i)
 		res_b2 = Convolution(scope_name, res_b2, 1024, 1, 1, 1, 1, "SAME", "none")
 		scope_name = "layer4_block{0}_shortcut_add".format(3+i)
-		res = Sum(scope_name, res, res_b2, 1.0, 1.0, "none")
+		res_sum = Sum(scope_name, res_sum, res_b2, 1.0, 1.0, "none")
 		scope_name = "layer4_block{0}_residual_bn_relu_FusedBatchNorm".format(3+i)
-		res = BatchNorm(scope_name, res, 0.0010000000475, "relu")
+		res = BatchNorm(scope_name, res_sum, 0.0010000000475, "relu")
 	#
 	res4_32b2 = Convolution("layer4_block31_sub1_sub1_conv_Conv2D", res, 256, 1, 1, 1, 1, "SAME", "relu")
 	res4_32b2 = Convolution("layer4_block31_sub2_sub2_conv_Conv2D", res4_32b2, 256, 3, 3, 1, 1, "SAME", "relu")
 	res4_32b2 = Convolution("layer4_block31_sub3_sub3_conv_Conv2D", res4_32b2, 1024, 1, 1, 1, 1, "SAME", "none")
-	res4_32 = Sum("layer4_block31_shortcut_add", res, res4_32b2, 1.0, 1.0, "none")
-	res4_32 = BatchNorm("layer5_block0_common_bn_relu_FusedBatchNorm", res4_32, 0.0010000000475, "relu")
+	res4_32_sum = Sum("layer4_block31_shortcut_add", res_sum, res4_32b2, 1.0, 1.0, "none")
+	res4_32 = BatchNorm("layer5_block0_common_bn_relu_FusedBatchNorm", res4_32_sum, 0.0010000000475, "relu")
 	# cfg[4]
 	res5_1b2 = Convolution("layer5_block0_sub1_sub1_conv_Conv2D", res4_32, 512, 1, 1, 1, 1, "SAME", "relu")
 	res5_1b2 = Convolution("layer5_block0_sub2_sub2_conv_Conv2D", res5_1b2, 512, 3, 3, 2, 2, "SAME", "relu")
 	res5_1b2 = Convolution("layer5_block0_sub3_sub3_conv_Conv2D", res5_1b2, 2048, 1, 1, 1, 1, "SAME", "none")
 	res5_1b1 = Convolution("layer5_block0_shortcut_sub_sc_Conv2D", res4_32, 2048, 1, 1, 2, 2, "SAME", "none")
-	res5_1 = Sum("layer5_block0_shortcut_add", res5_1b1, res5_1b2, 1.0, 1.0, "none")
-	res5_1 = BatchNorm("layer5_block1_residual_bn_relu_FusedBatchNorm", res5_1, 0.0010000000475, "relu")
+	res5_1_sum = Sum("layer5_block0_shortcut_add", res5_1b1, res5_1b2, 1.0, 1.0, "none")
+	res5_1 = BatchNorm("layer5_block1_residual_bn_relu_FusedBatchNorm", res5_1_sum, 0.0010000000475, "relu")
 	#
 	res5_2b2 = Convolution("layer5_block1_sub1_sub1_conv_Conv2D", res5_1, 512, 1, 1, 1, 1, "SAME", "relu")
 	res5_2b2 = Convolution("layer5_block1_sub2_sub2_conv_Conv2D", res5_2b2, 512, 3, 3, 1, 1, "SAME", "relu")
 	res5_2b2 = Convolution("layer5_block1_sub3_sub3_conv_Conv2D", res5_2b2, 2048, 1, 1, 1, 1, "SAME", "none")
-	res5_2 = Sum("layer5_block1_shortcut_add", res5_1, res5_2b2, 1.0, 1.0, "none")
-	res5_2 = BatchNorm("avg_fc_fc_bn_FusedBatchNorm", res5_2, 0.0010000000475, "relu")
+	res5_2_sum = Sum("layer5_block1_shortcut_add", res5_1_sum, res5_2b2, 1.0, 1.0, "none")
+	res5_2 = BatchNorm("avg_fc_fc_bn_FusedBatchNorm", res5_2_sum, 0.0010000000475, "relu")
 	# avg pooling
 	avg_pool = Pooling("avg_fc_AvgPool", res5_2, 7, 7, 1, 1, "AVG", "VALID")
 	fc6 = Convolution("avg_fc_fc6_Conv2D", avg_pool, 6, 1, 1, 1, 1, "SAME", "none")
 
-	return conv1
+	return fc6
 
 
 def load_weights(session, file):
@@ -231,11 +232,22 @@ def load_weights(session, file):
 		for val in var.get_shape():
 			weight_size = weight_size * val
 
-		w = np.reshape(net_weights[count:count+weight_size], var.get_shape())
+		if -1 != var.name.find("Conv") and -1 != var.name.find("Variable:0"):
+			# tf - [h][w][i][o] <==> mkldnn - [o][i][h][w]
+			w_shape = var.get_shape()
+			w = np.reshape(net_weights[count:count+weight_size], (w_shape[3],w_shape[2],w_shape[0],w_shape[1]))
+			print(w.shape)  # mkldnn tensor
+			w = np.transpose(w, (2,3,1,0))  # mkldnn tensor format -> tf tensor format
+			print(w.shape)  # tf tensor
+			# update weights
+			update = tf.assign(var, w)
+			session.run(update)
+		else:
+			w = np.reshape(net_weights[count:count+weight_size], var.get_shape())
+			update = tf.assign(var, w)
+			session.run(update)
+
 		count = count + weight_size
-		# update weights
-		update = tf.assign(var, w)
-		session.run(update)
 	print(count)
 
 
@@ -248,17 +260,19 @@ def main(argv):
 		sess.run(init)
 		load_weights(sess, "save_model/weights.bin")
 
+		#saver = tf.train.Saver()
+		#saver.save(sess, "tf_model/model.ckpt")
+
+		imgs = make_fake_input(1, 224, 224, 3)
 		for step in range(1):
-
-			#print("\ndumping...\n")
+			## dump weights
 			#for var in tf.trainable_variables():
-			#       print(var)
-			#       print(var.eval())
-			#       break
+			#	if -1 != var.name.find("layer2_block0_shortcut_sub_sc"):
+			#		print(var)
+			#		print(var.eval())
 
-			imgs = make_fake_input(1, 224, 224, 3)
 			result = sess.run(fc6, feed_dict={images:imgs})
-			#print(result)
+			print(result[0][0][0])
 	return 0
 
 
