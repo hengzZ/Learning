@@ -263,8 +263,19 @@ if __name__ == "__main__":
 note: Remember to define the same dtype and shape when restoring.
 
 
-## TensorFlow - Create your first CNN
-Quick Start: [your_first_cnn](your_first_cnn.md)
+## TensorFlow - TF CNN 入门
+**Quick Start: [your_first_cnn](your_first_cnn.md)  ## 这是一个很好的 tensorflow cnn 入门教程！！**
+
+
+
+# TensorFlow 概念梳理
+
+## 1. Variable, Operation, Node, Tensor 之间的关系与实际作用
+1. 在 tensorflow 中，网络结构是以图 （graph） 的形式保存，由一个或多个节点 （node） 和 边 （tensor） 组成。
+1. 边代表的是 tensors，节点代表的是对 tensors 的操作 （operations，or Ops for short）。
+1. Variables 在 tensorflow 中是参数对象，保存网络中的参数 （注意： 参数对象和tensor都是内存空间，但是用途不同）。
+1. **模型运行时，sess.run 提交的是 tensor 对象。**
+
 
 
 # 迁移学习
