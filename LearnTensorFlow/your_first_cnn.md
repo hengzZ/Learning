@@ -251,7 +251,29 @@ def load_weights(session, file):
 	print(count)
 
 
+def get_parser():
+    """
+    create a parser to parse argument "--cpu_num --inter_op_threads --intra_op_threads"
+    """
+    parser = argparse.ArgumentParser(description="Specify tensorflow parallelism")
+    parser.add_argument("--cpu_num", dest="cpu_num", default=1, help="specify how many cpus to use.(default: 1)")
+    parser.add_argument("--inter_op_threads", dest="inter_op_threads", default=1, help="specify max inter op parallelism.(default: 1)")
+    parser.add_argument("--intra_op_threads", dest="intra_op_threads", default=1, help="specify max intra op parallelism.(default: 1)")
+    return parser
+
+
 def main(argv):
+	parser = get_parser()
+	args = parser.parse_args()
+	#parser.print_help()
+	cpu_num = int(args.cpu_num)
+	inter_op_threads = int(args.inter_op_threads)
+	intra_op_threads = int(args.intra_op_threads)
+	# dump parallelism settings
+	print("cpu_num: ", cpu_num)
+	print("inter_op_threads: ", inter_op_threads)
+	print("intra_op_threads: ", intra_op_threads)
+
 	images = tf.placeholder(tf.float32, shape=(None,224,224,3))
 	fc6 = create_model(images)
 
