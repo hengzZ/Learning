@@ -440,6 +440,42 @@ variance_epsilon: A small float number to avoid dividing by 0. <br>
 * TFLearn
 * tensorflow.contrib.slim
 
+###### **3. 获取计算图中的 variable 和 operation
+**Part 1: 获取某一个 variable 和 operation**
+```python
+graph = tf.get_default_graph()
+graph.get_tensor_by_name(tensor_name)
+graph.get_operation_by_name(op_name)
+```
+**Part 2: 遍历方式获取 operation** <br>
+方法1： **node** 节点
+```python
+# 该方法可列出 graph 中每个 node 的详细信息
+for n in tf.get_default_graph().as_graph_def().node:
+	print(n)
+```
+方法2： **openration** 变量
+```python
+# op.valuses() 将返回 op 对应的 tensor 对象，可以进一步获取 tensor 的 name, shape 等信息
+for op in tf.get_default_graph().get_operations():
+	print(op.name)
+	print(op.values())
+```
+**Part 3: 遍历方式获取 variable** <br>
+方法1： tf.all_variables()
+```python
+# 显示默认计算图中所有的 variable（） 对象
+for variable in tf.all_variables():
+    print variable
+    print variable.name
+```
+方法2： tf.get_collection(collection_key)
+```python
+# 根据 key 返回相应 collection 中的对象, tensorflow 中预定义了一些 key, 如 GLOBAL_VARIABLES, LOCAL_VARIABLES, TRAINABLE_VARIABLES 等
+for variable in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+	print variable
+```
+
 
 ## Tensorflow - use high level library to create your cnn
 Keras
