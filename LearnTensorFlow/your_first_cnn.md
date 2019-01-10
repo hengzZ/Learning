@@ -3,6 +3,7 @@ A sample/quick start to create your first tensorflow cnn.
 
 
 ## Tensorflow - your first cnn
+
 #### 1. prerequisite knowledge
 在使用 tensorflow 时，会发现 tf.nn，tf.layers， tf.contrib 模块的很多功能是重复的，尤其是卷积操作. <br>
 比如：<br>
@@ -321,10 +322,11 @@ reference:
 1. https://tensorflow.google.cn/api_docs/python/tf/nn
 1. https://github.com/tensorflow/models/blob/master/official/resnet/resnet_model.py
 
-##### timeline 数据查看
+###### **timeline 数据查**
 * step 1: 将目录中 timeline.json 拷贝至windows
 * step 2: 打开 chrome 浏览器，输入：chrome://tracing
 * step 3: 点击 load 按钮，导入 timeline.json 文件查看
+
 
 #### 2.1 模型保存
 ```python
@@ -434,12 +436,6 @@ variance_epsilon: A small float number to avoid dividing by 0. <br>
 
 二者并没有差别. 运算符重载的形式 a+b, 会在内部转换为 a.\_\_add__(b), 而 a.\_\_add__(b) 会再一次地映射为 tf.add.
 
-## Tensorflow - High Level Library
-* Keras
-* TensorLayer
-* TFLearn
-* tensorflow.contrib.slim
-
 ###### **3. 获取计算图中的 variable 和 operation
 **Part 1: 获取某一个 variable 和 operation**
 ```python
@@ -475,6 +471,13 @@ for variable in tf.all_variables():
 for variable in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
 	print variable
 ```
+
+
+## Tensorflow - High Level Library
+* Keras
+* TensorLayer
+* TFLearn
+* tensorflow.contrib.slim
 
 
 ## Tensorflow - use high level library to create your cnn
