@@ -328,23 +328,44 @@ reference:
 
 #### 2.1 模型保存
 ```python
+# 请记住，Tensorflow 变量仅在会话中存在! 因此，必须在一个会话中保存模型。
 saver = tf.train.Saver()
 saver.save(sess, "tf_model/model.ckpt")
 ```
+结果：
+```bash
+checkpoint
+model.ckpt.data-00000-of-00001
+model.ckpt.index
+model.ckpt.meta
+```
+* meta graph - 这是一个协议缓冲区，它保存了完整的 tensorflow 图形。即所有变量、操作、集合等。该文件以 .meta 作为扩展名。
+* checkpoint file:
+	* tensorflow 0.11 版本以前，这是一个二进制文件，它包含了所有的权重、偏差、梯度和其他所有变量的值。扩展名 .ckpt。
+	* 现在，有两个文件，而不是单个 .ckpt 文件。 （分别为 index 和 data 文件，另外一个名为 checkpoint 的文件，它只保存最新保存的 checkpoint 文件的记录。）
 
 #### 2.2 模型加载
+如果你想用别人预先训练好的模型，需要做以下两件事：
+* 创建网络 - 可以通过编写 python 代码创建网络，以手工创建每一层，并将其作为原始模型。 如果已经在 .meta 文件中保存了这个网络，可以使用 tf.train.import() 函数来重新创建这个网络。
+```python
+saver = tf.train.import_meta_graph("model/model.ckpt.meta")
+```
+* 载入参数 - 恢复网络的参数
+```python
+saver.restore(sess, tf.train.latest_checkpoint("model/"))
+```
+
+示例：
 ```python
 # coding:utf8
-import os
-import sys
 import tensorflow as tf
 
 
 def main():
 
 	with tf.Session() as sess:
-		saver = tf.train.import_meta_graph("tf_model/model.ckpt.meta")
-		saver.restore(sess, tf.train.latest_checkpoint("tf_model/"))
+		saver = tf.train.import_meta_graph("model/model.ckpt.meta")
+		saver.restore(sess, tf.train.latest_checkpoint("model/"))
 
 		for var in tf.trainable_variables():
 			print(var.name)
@@ -356,6 +377,45 @@ def main():
 
 if __name__ == "__main__":
 	main()
+```
+
+#### 2.3 使用导入的模型
+* 当我们想要恢复一个模型时，不仅要恢复图和权重，还要准备一个新的feed_dict，它将把新的数据输入到网络中。
+* 如果希望将新的训练数据更新到网络中，可以通过 graph.get_tensor_by_name() 方法来引用保存的操作和占位符变量。
+```python
+#How to access saved variable/Tensor/placeholders 
+w1 = graph.get_tensor_by_name("w1:0")
+
+## How to access saved operation
+op_to_restore = graph.get_tensor_by_name("op_to_restore:0")
+```
+* 如果只是想用不同的数据运行相同的网络，只需简单地通过 feed_dict 将新数据传递给网络。
+```python
+import tensorflow as tf
+ 
+sess=tf.Session()    
+# 第一步: let's load meta graph and restore weights
+saver = tf.train.import_meta_graph('my_test_model-1000.meta')
+saver.restore(sess,tf.train.latest_checkpoint('./'))
+ 
+ 
+# 第二步： let's access and create placeholders variables and create feed-dict to feed new data 
+graph = tf.get_default_graph()
+w1 = graph.get_tensor_by_name("w1:0")
+w2 = graph.get_tensor_by_name("w2:0")
+feed_dict ={w1:13.0,w2:17.0}
+ 
+#第三步： access the op that you want to run. 
+op_to_restore = graph.get_tensor_by_name("op_to_restore:0")
+
+# 运行
+print sess.run(op_to_restore,feed_dict)
+# Note: This will print 60 which is calculated using new values of w1 and w2 and saved value of b1. 
+```
+
+示例：
+```python
+
 ```
 
 
