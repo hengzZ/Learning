@@ -256,7 +256,12 @@ def main(argv):
 	fc6 = create_model(images)
 
 	init = tf.global_variables_initializer()
-	with tf.Session() as sess:
+	
+	config = tf.ConfigProto(device_count={"CPU": 4}, # limit to num_cpu_core CPU usage
+                inter_op_parallelism_threads = 1, # OP 之间并行度(针对当运算符op为单一运算符，并且内部可以实现并行时，如矩阵乘法)
+                intra_op_parallelism_threads = 4, # OP 内部并行度(针对当有多个运算符op，并且他们之间比较独立，运算符和运算符之间没有直接的路径Path相连.即并行网络分支)
+                log_device_placement=False)
+	with tf.Session(config = config) as sess:
 		sess.run(init)
 		load_weights(sess, "save_model/weights.bin")
 
