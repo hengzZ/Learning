@@ -252,14 +252,15 @@ def load_weights(session, file):
 
 
 def get_parser():
-    """
-    create a parser to parse argument "--cpu_num --inter_op_threads --intra_op_threads"
-    """
-    parser = argparse.ArgumentParser(description="Specify tensorflow parallelism")
-    parser.add_argument("--cpu_num", dest="cpu_num", default=1, help="specify how many cpus to use.(default: 1)")
-    parser.add_argument("--inter_op_threads", dest="inter_op_threads", default=1, help="specify max inter op parallelism.(default: 1)")
-    parser.add_argument("--intra_op_threads", dest="intra_op_threads", default=1, help="specify max intra op parallelism.(default: 1)")
-    return parser
+	"""
+	create a parser to parse argument "--cpu_num --inter_op_threads --intra_op_threads"
+	"""
+	parser = argparse.ArgumentParser(description="Specify tensorflow parallelism")
+	parser.add_argument("--cpu_num", dest="cpu_num", default=1, help="specify how many cpus to use.(default: 1)")
+	parser.add_argument("--inter_op_threads", dest="inter_op_threads", default=1, help="specify max inter op parallelism.(default: 1)")
+	parser.add_argument("--intra_op_threads", dest="intra_op_threads", default=1, help="specify max intra op parallelism.(default: 1)")
+	parser.add_argument("--dump_timeline", dest="dump_timeline", default=False, help="specify to dump timeline.(default: False)")
+	return parser
 
 
 def main(argv):
@@ -269,10 +270,12 @@ def main(argv):
 	cpu_num = int(args.cpu_num)
 	inter_op_threads = int(args.inter_op_threads)
 	intra_op_threads = int(args.intra_op_threads)
+	dump_timeline = bool(args.dump_timeline)
 	# dump parallelism settings
 	print("cpu_num: ", cpu_num)
 	print("inter_op_threads: ", inter_op_threads)
 	print("intra_op_threads: ", intra_op_threads)
+	print("dump_timeline: ", dump_timeline)
 
 	images = tf.placeholder(tf.float32, shape=(None,224,224,3))
 	fc6 = create_model(images)
@@ -297,8 +300,16 @@ def main(argv):
 			#	if -1 != var.name.find("layer2_block0_shortcut_sub_sc"):
 			#		print(var)
 			#		print(var.eval())
-
-			result = sess.run(fc6, feed_dict={images:imgs})
+			if dump_timeline:
+				run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+				run_metadata = tf.RunMetadata()
+				result = sess.run(fc6, feed_dict={images:imgs}, options=run_options, run_metadata=run_metadata)
+				tm = timeline.Timeline(run_metadata.step_stats)
+				ctf = tm.generate_chrome_trace_format()
+				with open('timeline.json', 'w') as f:
+					f.write(ctf)
+			else:
+				result = sess.run(fc6, feed_dict={images:imgs})
 			print(result[0][0][0])
 	return 0
 
@@ -309,6 +320,11 @@ if __name__ == "__main__":
 reference:
 1. https://tensorflow.google.cn/api_docs/python/tf/nn
 1. https://github.com/tensorflow/models/blob/master/official/resnet/resnet_model.py
+
+##### timeline 数据查看
+* step 1: 将目录中 timeline.json 拷贝至windows
+* step 2: 打开 chrome 浏览器，输入：chrome://tracing
+* step 3: 点击 load 按钮，导入 timeline.json 文件查看
 
 #### 2.1 模型保存
 ```python
