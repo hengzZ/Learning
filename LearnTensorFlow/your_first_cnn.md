@@ -417,9 +417,74 @@ print sess.run(op_to_restore,feed_dict)
 
 示例：
 ```python
+# coding:utf8
+import numpy as np
+import tensorflow as tf
 
+def make_fake_input(batch_size, input_height, input_width, input_channel):
+	im = np.zeros((input_height,input_width,input_channel), np.uint8)
+	im[:,:,:] = 1
+	images = np.zeros((batch_size, input_height, input_width, input_channel), dtype=np.float32)
+	for i in xrange(batch_size):
+		images[i, 0:im.shape[0], 0:im.shape[1], :] = im
+		#channel_swap = (0, 3, 1, 2)  # caffe
+		#images = np.transpose(images, channel_swap)
+		#cv2.imwrite("test.jpg", im)
+		return images
+
+def main():
+
+	imgs = make_fake_input(1, 224, 224, 3)
+
+	with tf.Session() as sess:
+		saver = tf.train.import_meta_graph("model/model.ckpt.meta")
+		saver.restore(sess, tf.train.latest_checkpoint("model/"))
+
+		#variable_names = [v.name for v in tf.trainable_variables()]
+		#variable_names = [v.name for v in tf.global_variables()]
+		#values = sess.run(variable_names)
+		#
+		#for k,v in zip(variable_names, values):
+		#       print("Variable Name: ", k)
+		#       print("Shape: ", v.shape)
+		#       #print(v)
+
+		## Nodes
+		#for n in tf.get_default_graph().as_graph_def().node:
+		#       print(n)
+
+		## Operations
+		#for op in tf.get_default_graph().get_operations():
+		#       print(op.name)
+		#       print(op.values())
+
+		## Variables
+		#for variable in tf.all_variables():
+		#       print(variable)
+		#       print(variable.name)
+
+		graph = tf.get_default_graph()
+		input = graph.get_tensor_by_name("Placeholder:0")  ## find this tensor name by dumping the op.values()
+		fc6 = graph.get_tensor_by_name("avg_fc_fc6_Conv2D/BiasAdd:0")  ## find this tensor name by dumping op.values()
+
+		result = sess.run(fc6, feed_dict={input:imgs})  ## 特别注意， sess.run 传入的是 tensor 对象，网络层定义时返回的也是 tensor 对象!!
+		print(result)
+
+	return 0
+
+if __name__ == "__main__":
+	main()
 ```
-
+Operations 详情信息如下：
+```python
+Placeholder
+(<tf.Tensor 'Placeholder:0' shape=(?, 224, 224, 3) dtype=float32>,)
+...
+avg_fc_fc6_Conv2D/Variable_1/read
+(<tf.Tensor 'avg_fc_fc6_Conv2D/Variable_1/read:0' shape=(6,) dtype=float32>,)
+avg_fc_fc6_Conv2D/BiasAdd
+(<tf.Tensor 'avg_fc_fc6_Conv2D/BiasAdd:0' shape=(?, 1, 1, 6) dtype=float32>,)
+```
 
 #### 3. supplement knowledge
 ###### **1. BatchNorm**
@@ -450,7 +515,7 @@ graph.get_operation_by_name(op_name)
 for n in tf.get_default_graph().as_graph_def().node:
 	print(n)
 ```
-方法2： **openration** 变量
+方法2： **operation** 变量
 ```python
 # op.valuses() 将返回 op 对应的 tensor 对象，可以进一步获取 tensor 的 name, shape 等信息
 for op in tf.get_default_graph().get_operations():
