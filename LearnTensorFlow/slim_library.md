@@ -89,8 +89,10 @@ online book: Neural Networks and Deep Learning (http://neuralnetworksanddeeplear
 
 <br>
 <br>
+
 * 人们普遍认为：更小的权值w，从某种意义上说，表示网络的复杂度更低，对数据的拟合刚刚好（这个法则也叫做奥卡姆剃刀）
 * **奥卡姆剃刀原理 - 如无必要，勿增实体。（即“简单有效原理”）**
+
 <br>
 <br>
 
