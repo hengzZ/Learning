@@ -1,4 +1,4 @@
-# slim library learning note
+# Slim Library Learning Note
 TF-Slim is a lightweight library for defining, training and evaluating complex models in TensorFlow. Components of tf-slim can be freely mixed with native tensorflow, as well as other frameworks, such as tf.contrib.learn.
 
 ## Slim - Components
@@ -17,10 +17,9 @@ TF-Slim is composed of several parts which were design to exist independently. T
 * **variables**: provides convenience wrappers for variable creation and manipulation.
 
 
-
 ## Puzzles
-#### 1. argument scope
-In addition to the types of **scope mechanisms** in TensorFlow (*name_scope*, *variable_scope*), TF-Slim adds a new scoping mechanism called *arg_scope*. This new scope allows a user to specify one or more operations and a set of arguments which will be passed to each of the operations defined in the arg_scope.
+#### 1. Argument Scope
+*In addition to the types of **scope mechanisms** in TensorFlow (**name_scope**, **variable_scope**), TF-Slim adds a new scoping mechanism called **arg_scope**. This new scope allows a user to specify one or more operations and a set of arguments which will be passed to each of the operations defined in the arg_scope.*
 ```python
 ## version 1 - original code
 net = slim.conv2d(inputs, 64, [11, 11], 4, padding='SAME',
@@ -82,18 +81,22 @@ with slim.arg_scope([slim.conv2d, slim.fully_connected],
     net = slim.fully_connected(net, 1000, activation_fn=None, scope='fc')
 ```
 
-#### 2. weight regularizer
-L1, L2 (L2 *regularization* is also called *weight decay*)，作用于模型训练时的参数更新。
+#### 2. Weight Regularizer
+*L1, L2 (L2 regularization is also called **weight decay**)，作用于模型训练时的参数更新。*<br>
 online book: Neural Networks and Deep Learning (http://neuralnetworksanddeeplearning.com)
 
-防止过拟合，提高泛化能力: regularization、Dropout、Data Augmentation
+防止过拟合，提高泛化能力 -> Regularization、Dropout、Data Augmentation
 
+<br>
+<br>
 * 人们普遍认为：更小的权值w，从某种意义上说，表示网络的复杂度更低，对数据的拟合刚刚好（这个法则也叫做奥卡姆剃刀）
 * **奥卡姆剃刀原理 - 如无必要，勿增实体。（即“简单有效原理”）**
+<br>
+<br>
 
-#### 3. Create layers
-Orignal Tensorflow Code: <br>
-A layer, such as a Convolutional Layer, a Fully Connected Layer or a BatchNorm Layer are more abstract than a single TensorFlow operation and typically involve several operations
+#### 3. Create Layers
+orignal tensorflow: <br>
+*A layer, such as a Convolutional Layer, a Fully Connected Layer or a BatchNorm Layer are more abstract than a single TensorFlow operation and typically involve several operations*
 ```python
 input = ...
 with tf.name_scope('conv1_1') as scope:
