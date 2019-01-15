@@ -15,6 +15,10 @@ tf.nn.conv2d 与 tf.layers.conv2d 在功能上事相同的.
 1. tf.contrib：提供将计算图中的网络层、正则化等构建计算图的高级操作。但是 tf.contrib 包含不稳定和实验代码，有可能以后 API 会改变。
 
 #### 2. your firt network
+This network is a modified version of resnet v2 (full pre-activation) <br>
+<p align="center"><img src="pics/resnet_v2.JPG" width="40%"></p> <br>
+ref: Identity Mappings in Deep Residual Networks (http://arxiv.org/pdf/1603.05027.pdf)
+
 ```python
 # coding: utf8
 import os
