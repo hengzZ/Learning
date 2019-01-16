@@ -17,7 +17,7 @@
 * “单一职责原则” （SRP）
 * McCabe 代码复杂度
 
-Design Pattern:
+Design Pattern: <br>
 [Go to Quick Start (Tutorial)](DesignPattern/)
 
 
@@ -26,7 +26,7 @@ Design Pattern:
 重点：
 * 降低代码的腐化速度，降低重构投入
 
-Refacter:
+Refacter: <br>
 
 
 
