@@ -158,21 +158,23 @@ slim.stack(x, slim.conv2d, [(32, [3, 3]), (32, [1, 1]), (64, [3, 3]), (64, [1, 1
 ```
 
 #### 4. Slim Built-In Networks
-官方代码（发布版）： http://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim （from tensorflow.contrib.slim.nets import resnet_v2）
+官方代码（发布版）： http://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim （from tensorflow.contrib.slim.nets import resnet_v2） <br>
 官方代码（测试版）： http://github.com/tensorflow/models/blob/master/research/slim/nets/resnet_v2.py
 
 代码追踪：
-* slim 包（**package**）初始化： models/research/slim/__init__.py 或者 tensorflow/contrib/slim/__init__.py
-* nets 模块（**module**）初始化： models/research/slim/nets/__init__.py 或者 tensorflow/contrib/slim/nets.py
+* slim 包（**package**）初始化： models/research/slim/\_\_init__.py 或者 tensorflow/contrib/slim/\_\_init__.py
+* nets 模块（**module**）初始化： models/research/slim/nets/\_\_init__.py 或者 tensorflow/contrib/slim/nets.py
 * resnet_v2 源码： models/research/slim/nets/resnet_v2.py 或者 tensorflow/contrib/slim/python/slim/nets/resnet_v2.py
 
 ##### 补充 - python 代码结构
 	* package - A dir with __init__.py
+	
 	* module - You can use any Python source file as a module 
 	           by executing an import statement in some other Python source file.
+	
 	* namespace
 	
-	  Python's *from...import* lets you import specific attributes from a module into the current namespace
+	Python's *from...import* lets you import specific attributes from a module into the current namespace
 
 *Simply, a python module is a file consisting of Python code. A module can define functions, classes and variables. A module can also include runnable code.*
 
