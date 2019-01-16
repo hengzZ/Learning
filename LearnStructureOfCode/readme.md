@@ -17,12 +17,17 @@
 * “单一职责原则” （SRP）
 * McCabe 代码复杂度
 
+Design Pattern:
+[Go to Quick Start (Tutorial)](DesignPattern/)
 
 
 ## Part 2. 重构法则
 
 重点：
 * 降低代码的腐化速度，降低重构投入
+
+Refacter:
+
 
 
 ## MVC 模式
