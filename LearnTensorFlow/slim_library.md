@@ -157,8 +157,137 @@ x = slim.conv2d(x, 64, [1, 1], scope='core/core_4')
 slim.stack(x, slim.conv2d, [(32, [3, 3]), (32, [1, 1]), (64, [3, 3]), (64, [1, 1])], scope='core')
 ```
 
+#### 4. Slim Built-In Networks
+官方代码（发布版）： http://github.com/tensorflow/tensorflow/tree/master/tensorflow/contrib/slim （from tensorflow.contrib.slim.nets import resnet_v2）
+官方代码（测试版）： http://github.com/tensorflow/models/blob/master/research/slim/nets/resnet_v2.py
 
-## Slim - VGG16
+代码追踪：
+* slim 包（**package**）初始化： models/research/slim/__init__.py 或者 tensorflow/contrib/slim/__init__.py
+* nets 模块（**module**）初始化： models/research/slim/nets/__init__.py 或者 tensorflow/contrib/slim/nets.py
+* resnet_v2 源码： models/research/slim/nets/resnet_v2.py 或者 tensorflow/contrib/slim/python/slim/nets/resnet_v2.py
+
+##### 补充 - python 代码结构
+	* package - A dir with __init__.py
+	* module - You can use any Python source file as a module 
+	           by executing an import statement in some other Python source file.
+	* namespace
+	
+	  Python's *from...import* lets you import specific attributes from a module into the current namespace
+
+*Simply, a python module is a file consisting of Python code. A module can define functions, classes and variables. A module can also include runnable code.*
+
+## Slim - Use Built-In Resnet_v2
+```python
+# coding:utf8
+import os
+import sys
+
+import numpy as np
+import tensorflow as tf
+slim = tf.contrib.slim
+
+from tensorflow.contrib.slim.nets import resnet_v2  ## tensorflow/contrib/slim/nets.py
+
+from tensorflow.python.client import timeline
+import argparse
+import time
+
+
+def make_fake_input(batch_size, input_height, input_width, input_channel):
+        im = np.zeros((input_height,input_width,input_channel), np.uint8)
+        im[:,:,:] = 1
+        images = np.zeros((batch_size, input_height, input_width, input_channel), dtype=np.float32)
+        for i in xrange(batch_size):
+                images[i, 0:im.shape[0], 0:im.shape[1], :] = im
+                #channel_swap = (0, 3, 1, 2)  # caffe
+                #images = np.transpose(images, channel_swap)
+                #cv2.imwrite("test.jpg", im)
+        return images
+
+
+def get_parser():
+        """
+        create a parser to parse argument "--cpu_num --inter_op_threads --intra_op_threads"
+        """
+        parser = argparse.ArgumentParser(description="Specify tensorflow parallelism")
+        parser.add_argument("--cpu_num", dest="cpu_num", default=1, help="specify how many cpus to use.(default: 1)")
+        parser.add_argument("--inter_op_threads", dest="inter_op_threads", default=1, help="specify max inter op parallelism.(default: 1)")
+        parser.add_argument("--intra_op_threads", dest="intra_op_threads", default=1, help="specify max intra op parallelism.(default: 1)")
+        parser.add_argument("--dump_timeline", dest="dump_timeline", default=False, help="specify to dump timeline.(default: False)")
+        return parser
+
+
+def main():
+
+        parser = get_parser()
+        args = parser.parse_args()
+        #parser.print_help()
+        cpu_num = int(args.cpu_num)
+        inter_op_threads = int(args.inter_op_threads)
+        intra_op_threads = int(args.intra_op_threads)
+        dump_timeline = bool(args.dump_timeline)
+        print("cpu_num: ", cpu_num)
+        print("inter_op_threads: ", inter_op_threads)
+        print("intra_op_threads: ", intra_op_threads)
+        print("dump_timeline: ", dump_timeline)
+
+        # create model
+        inputs = tf.placeholder(tf.float32, shape=(None,224,224,3))
+
+        arg_scope = resnet_v2.resnet_arg_scope()
+        with slim.arg_scope(arg_scope):
+                #net, endpoints = resnet_v2.resnet_v2_152(inputs, 1000, is_training=False)
+                net, endpoints = resnet_v2.resnet_v2_101(inputs, 6, is_training=False)
+
+                ## ResNet-101 for semantic segmentation into 21 classes:
+                # net, end_points = resnet_v2.resnet_v2_101(inputs,
+                #                                 21,
+                #                                 is_training=False,
+                #                                 global_pool=False,
+                #                                 output_stride=16)
+
+
+        # create initialization op
+        init = tf.global_variables_initializer()
+
+        config = tf.ConfigProto(device_count={"CPU": cpu_num}, # limit to num_cpu_core CPU usage
+                inter_op_parallelism_threads = inter_op_threads,
+                intra_op_parallelism_threads = intra_op_threads,
+                log_device_placement=False)
+        with tf.Session(config = config) as sess:
+                sess.run(init)
+                imgs = make_fake_input(1, 224, 224, 3)
+
+                #for op in tf.get_default_graph().get_operations():
+                #       print(op.name)
+                #       print(op.values())
+
+                time_start = time.time()
+                for step in range(200):
+                        if dump_timeline:
+                                run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+                                run_metadata = tf.RunMetadata()
+                                result = sess.run(net, feed_dict={inputs:imgs}, options=run_options, run_metadata=run_metadata)
+                                tm = timeline.Timeline(run_metadata.step_stats)
+                                ctf = tm.generate_chrome_trace_format()
+                                with open('timeline.json', 'w') as f:
+                                        f.write(ctf)
+                                print(result)
+                        else:
+                                result = sess.run(net, feed_dict={inputs:imgs})
+                                print(result)
+                time_end = time.time()
+                avg_time = (time_end-time_start) * 1000 / 200;
+                print("AVG Time: ", avg_time, " ms")
+        return 0
+
+
+if __name__ == "__main__":
+        sys.exit(main())
+```
+
+
+## Slim - Create VGG16
 ```python
 def vgg16(inputs):
   with slim.arg_scope([slim.conv2d, slim.fully_connected],
