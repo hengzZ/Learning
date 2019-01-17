@@ -97,3 +97,8 @@ $ git fetch // 效果：get pull = git fetch + git merge
 $ git branch [branch name]  # 创建本地分支
 $ git push origin [branch name]  # 推到远端分支
 ```
+
+##### 16. 从 Github 安装 python 包
+```
+pip install git+https://github.com/wkentaro/labelme.git
+```
