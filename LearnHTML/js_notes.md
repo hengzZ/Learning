@@ -32,7 +32,7 @@ Attr:
 
 
 ## JavaScript - Syntax
-The *\<script>* tag alerts the browser program to start interpreting all the text between these tags as a script.
+*The **\<script>** tag alerts the browser program to start interpreting all the text between these tags as a script.*
 ```html
 <script language="javascript" type="text/javascript">
    javascript code
@@ -45,13 +45,13 @@ The *\<script>* tag alerts the browser program to start interpreting all the tex
 
 ## JavaScript - Variables
 Three ***primitive*** data types:
-* ***Numbers*** eg: 123, 120.50 etc.
-* ***Strings*** eg: "This text string" etc.
-* ***Boolean*** eg: *true* or *false*.
+* ***Numbers*** - eg: 123, 120.50 etc.
+* ***Strings*** - eg: "This text string" etc.
+* ***Boolean*** - eg: *true* or *false*.
 
 *Javascript also defines two trivial data types, **null** and **undefined**.*
 
-*Javascript is untyped language and variables are declared with **var***
+*Javascript is untyped language and variables are declared with **var***:
 ```html
 <script type="text/javascript">
    <!--
@@ -84,41 +84,35 @@ Javascript variables have only two scopes.
 
 
 ## JavaScript - Control Statement
-* if-else
+* ***IF-ELSE***
 ```html
 <html>
    <body>
-   
       <script type="text/javascript">
          <!--
             var book = "maths";
             if( book == "history" ){
                document.write("<b>History Book</b>");
             }
-         
             else if( book == "maths" ){
                document.write("<b>Maths Book</b>");
             }
-         
             else if( book == "economics" ){
                document.write("<b>Economics Book</b>");
             }
-         
             else{
                document.write("<b>Unknown Book</b>");
             }
          //-->
       </script>
-      
       <p>Set the variable to different value and then try...</p>
    </body>
 </html>
 ```
-* switch
+* ***SWITCH***
 ```html
 <html>
    <body>
-   
       <script type="text/javascript">
          <!--
             var grade='A';
@@ -127,34 +121,27 @@ Javascript variables have only two scopes.
             {
                case 'A': document.write("Good job<br />");
                break;
-            
                case 'B': document.write("Pretty good<br />");
                break;
-            
                case 'C': document.write("Passed<br />");
                break;
-            
                case 'D': document.write("Not so good<br />");
                break;
-            
                case 'F': document.write("Failed<br />");
                break;
-            
                default:  document.write("Unknown grade<br />")
             }
             document.write("Exiting switch block");
          //-->
       </script>
-      
       <p>Set the variable to different value and then try...</p>
    </body>
 </html>
 ```
-* while/do-while
+* ***WHILE/DO-WHILE***
 ```html
 <html>
    <body>
-      
       <script type="text/javascript">
          <!--
             var count = 0;
@@ -168,16 +155,14 @@ Javascript variables have only two scopes.
             document.write("Loop stopped!");
          //-->
       </script>
-      
       <p>Set the variable to different value and then try...</p>
    </body>
 </html>
 ```
-* for
+* ***FOR***
 ```html
 <html>
    <body>
-      
       <script type="text/javascript">
          <!--
             var count;
@@ -191,16 +176,14 @@ Javascript variables have only two scopes.
             document.write("Loop stopped!");
          //-->
       </script>
-      
       <p>Set the variable to different value and then try...</p>
    </body>
 </html>
 ```
-* for...in
+* ***FOR...IN***
 ```html
 <html>
    <body>
-      
       <script type="text/javascript">
          <!--
             var aProperty;
@@ -213,7 +196,6 @@ Javascript variables have only two scopes.
             document.write ("Exiting from the loop!");
          //-->
       </script>
-      
       <p>Set the variable to different object and then try...</p>
    </body>
 </html>
