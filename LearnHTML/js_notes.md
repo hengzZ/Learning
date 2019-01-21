@@ -51,7 +51,7 @@ Three ***primitive*** data types:
 
 *Javascript also defines two trivial data types, **null** and **undefined**.*
 
-*Javascript is untyped language and variables are declared with **var***:
+*Javascript is untyped language and variables are declared with **var**:*
 ```html
 <script type="text/javascript">
    <!--
@@ -203,13 +203,12 @@ Javascript variables have only two scopes.
 
 
 ## JavaScript - Functions
-The most common way to define a function in JavaScript is by using the **function** keyword.
+*The most common way to define a function in JavaScript is by using the **function** keyword.*
 
 Try the following example. It defines a function that takes two parameters and concatenates them before returning the resultant in the calling program.
 ```html
 <html>
    <head>
-      
       <script type="text/javascript">
          function concatenate(first, last)
          {
@@ -225,9 +224,7 @@ Try the following example. It defines a function that takes two parameters and c
             document.write (result );
          }
       </script>
-      
    </head>
-   
    <body>
       <p>Click the following button to call the function</p>
       
@@ -248,13 +245,12 @@ There is a lot to learn about JavaScript functions, such as:
 
 ## JavaScript - Events
 **What is an Event ?** <br>
-JavaScript's interaction with HTML is handled through events that occur when the user or the browser manipulates a page.
+*JavaScript's interaction with HTML is handled through events that occur when the user or the browser manipulates a page.*
 
 Here we will see a onclick Event example to understand a relation between Event and JavaScript −
 ```html
 <html>
    <head>
-      
       <script type="text/javascript">
          <!--
             function sayHello() {
@@ -262,9 +258,7 @@ Here we will see a onclick Event example to understand a relation between Event 
             }
          //-->
       </script>
-      
    </head>
-   
    <body>
       <p>Click the following button and see result</p>
       
@@ -280,9 +274,9 @@ Please go through [a small tutorial](https://www.tutorialspoint.com/html/html_ev
 
 ## JavaScript - Cookies
 **What are Cookies ?** <br>
-Cookies is the most efficient method of remembering and tracking preferences, purchases, commissions, and other information required for better visitor experience or site statistics.
+*Cookies is the most efficient method of remembering and tracking preferences, purchases, commissions, and other information required for better visitor experience or site statistics.*
 
-Cookies are a plain text data record of 5 variable-length fields −
+Cookies are a plain text data record of 5 variable-length fields:
 * **Expires** − The date the cookie will expire. If this is blank, the cookie will expire when the visitor quits the browser.
 * **Domain** − The domain name of your site.
 * **Path** − The path to the directory or web page that set the cookie. This may be blank if you want to retrieve the cookie from any directory or page.
@@ -293,7 +287,6 @@ Cookies were originally designed for CGI programming, so CGI scripts on the serv
 ```html
 <html>
    <head>
-   
       <script type="text/javascript">
          <!--
             function WriteCookie()
@@ -308,19 +301,16 @@ Cookies were originally designed for CGI programming, so CGI scripts on the serv
             }
          //-->
       </script>
-      
    </head>
    <body>
-   
       <form name="myform" action="">
          Enter name: <input type="text" name="customer"/>
          <input type="button" value="Set Cookie" onclick="WriteCookie()"/>
       </form>
-      
    </body>
 </html>
 ```
-Note − Cookie values may not include semicolons, commas, or whitespace. For this reason, you may want to use the JavaScript escape() function to encode the value before storing it in the cookie. If you do this, you will also have to use the corresponding unescape() function when you read the cookie value.
+*Note − Cookie values may not include semicolons, commas, or whitespace. For this reason, you may want to use the JavaScript escape() function to encode the value before storing it in the cookie. If you do this, you will also have to use the corresponding unescape() function when you read the cookie value.*
 
 
 ## JavaScript - Page Redirection
@@ -328,7 +318,6 @@ To redirect your site visitors to a new page, you just need to add a line in you
 ```html
 <html>
    <head>
-   
       <script type="text/javascript">
          <!--
             function Redirect() {
@@ -339,9 +328,7 @@ To redirect your site visitors to a new page, you just need to add a line in you
             setTimeout('Redirect()', 10000);
          //-->
       </script>
-      
    </head>
-   
    <body>
    </body>
 </html>
@@ -350,11 +337,10 @@ Here setTimeout() is a built-in JavaScript function which can be used to execute
 
 
 ## JavaScript - Dialog Boxes
-JavaScript supports three important types of dialog boxes. These dialog boxes can be used to **raise an alert**, or to **get confirmation on any input** or to have a kind of **input from the users**.
+*JavaScript supports three important types of dialog boxes. These dialog boxes can be used to **raise an alert**, or to **get confirmation on any input** or to have a kind of **input from the users**.*
 ```html
 <html>
    <head>
-   
       <script type="text/javascript">
          <!--
             function Warn() {
@@ -363,7 +349,6 @@ JavaScript supports three important types of dialog boxes. These dialog boxes ca
             }
          //-->
       </script>
-      
    </head>
    <body>
       <p>Click the following button to see the result: </p>
@@ -375,11 +360,10 @@ JavaScript supports three important types of dialog boxes. These dialog boxes ca
    </body>
 </html>
 ```
-A confirmation dialog box is mostly used to take user's consent on any option. If the user clicks on the OK button, the window method **confirm()** will return true. If the user clicks on the Cancel button, then confirm() returns false. 
+*A confirmation dialog box is mostly used to take user's consent on any option. If the user clicks on the OK button, the window method **confirm()** will return true. If the user clicks on the Cancel button, then confirm() returns false.*
 ```html
 <html>
    <head>
-   
       <script type="text/javascript">
          <!--
             function getConfirmation(){
@@ -395,7 +379,6 @@ A confirmation dialog box is mostly used to take user's consent on any option. I
             }
          //-->
       </script>
-      
    </head>
    <body>
       <p>Click the following button to see the result: </p>
@@ -407,11 +390,10 @@ A confirmation dialog box is mostly used to take user's consent on any option. I
    </body>
 </html>
 ```
-The prompt dialog box is very useful when you want to pop-up a text box to get user input. This dialog box is displayed using a method called **prompt()** which takes two parameters: (i) a label which you want to display in the text box and (ii) a default string to display in the text box.
+*The prompt dialog box is very useful when you want to pop-up a text box to get user input. This dialog box is displayed using a method called **prompt()** which takes two parameters: (i) a label which you want to display in the text box and (ii) a default string to display in the text box.*
 ```html
 <html>
    <head>
-      
       <script type="text/javascript">
          <!--
             function getValue(){
@@ -420,9 +402,7 @@ The prompt dialog box is very useful when you want to pop-up a text box to get u
             }
          //-->
       </script>
-      
    </head>
-   
    <body>
       <p>Click the following button to see the result: </p>
       
@@ -437,12 +417,12 @@ This dialog box has two buttons: OK and Cancel. If the user clicks the OK button
 
 
 ## JavaScript - Void Keyword
-**Void** operator specifies an expression to be evaluated without returning a value.
+***Void** operator specifies an expression to be evaluated without returning a value.*
 
-The syntax of void can be either of the following two −
+The syntax of void can be either of the following two:
+* ***void function***
 ```html
 <head>
-
    <script type="text/javascript">
       <!--
          void func()
@@ -454,19 +434,17 @@ The syntax of void can be either of the following two −
          javascript:void(func())
       //-->
    </script>
-   
 </head>
 ```
+* ***void expression***
 Here the expression "0" is evaluated, but it is not loaded back into the current document.
 ```html
 <html>
    <head>
-   
       <script type="text/javascript">
          <!--
          //-->
       </script>
-      
    </head>
    <body>
    
@@ -479,14 +457,14 @@ Here the expression "0" is evaluated, but it is not loaded back into the current
 
 
 ## JavaScript - Objects
-JavaScript is an Object Oriented Programming (OOP) language - 
-* Encapsulation − the capability to store related information, whether data or methods, together in an object.
-* Aggregation − the capability to store one object inside another object.
-* Inheritance − the capability of a class to rely upon another class (or number of classes) for some of its properties and methods.
-* Polymorphism − the capability to write one function or method that works in a variety of different ways.
+*JavaScript is an Object Oriented Programming (OOP) language:*
+* ***Encapsulation*** − the capability to store related information, whether data or methods, together in an object.
+* ***Aggregation*** − the capability to store one object inside another object.
+* ***Inheritance*** − the capability of a class to rely upon another class (or number of classes) for some of its properties and methods.
+* ***Polymorphism*** − the capability to write one function or method that works in a variety of different ways.
 
-#### The Object() Constructor
-* way 1: use **var** keyword
+#### The Object Constructor
+* 1: *use **var** keyword*
 ```html
 <html>
    <head>
@@ -497,24 +475,19 @@ JavaScript is an Object Oriented Programming (OOP) language -
          book.subject = "Perl"; // Assign properties to the object
          book.author  = "Mohtashim";
       </script>
-      
    </head>
-   
    <body>
-   
       <script type="text/javascript">
          document.write("Book name is : " + book.subject + "<br>");
          document.write("Book author is : " + book.author + "<br>");
       </script>
-   
    </body>
 </html>
 ```
-* way 2: use **this** keyword
+* 2: *use **this** keyword*
 ```html
 <html>
    <head>
-   
    <title>User-defined objects</title>
    
       <script type="text/javascript">
@@ -523,22 +496,19 @@ JavaScript is an Object Oriented Programming (OOP) language -
             this.author  = author;
          }
       </script>
-      
    </head>
    <body>
-   
       <script type="text/javascript">
          var myBook = new book("Perl", "Mohtashim");
          document.write("Book title is : " + myBook.title + "<br>");
          document.write("Book author is : " + myBook.author + "<br>");
       </script>
-      
    </body>
 </html>
 ```
 
 #### Defining Methods for an Object
-Use **this** keyword in the function
+*Use **this** keyword in the function*
 ```html
 <html>
    <head>
@@ -627,7 +597,6 @@ Here is the list of all important JavaScript Native Objects −
 Every web page resides inside a browser window which can be considered as an object. A Document object represents the HTML document that is displayed in that window.
 ```html
 <html>
-   
    <head>
       <title> Document Title </title>
       
@@ -643,7 +612,6 @@ Every web page resides inside a browser window which can be considered as an obj
             }
          //-->
       </script>
-      
    </head>
    <body>
       <h1 id="heading">This is main title</h1>
@@ -657,7 +625,6 @@ Every web page resides inside a browser window which can be considered as an obj
       <form d="form2" name="SecondForm">
          <input type="button" value="Don't ClickMe"/>
       </form>
-      
    </body>
 </html>
 ```
@@ -668,9 +635,7 @@ Note: In the above codes, **document** is the DOM object representing current HT
 The try...catch...finally Statement
 ```html
 <html>
-   
    <head>
-      
       <script type="text/javascript">
          <!--
             function myFunc()
@@ -691,16 +656,13 @@ The try...catch...finally Statement
             }
          //-->
       </script>
-      
    </head>
-   
    <body>
       <p>Click the following to see the result:</p>
       
       <form>
          <input type="button" value="Click Me" onclick="myFunc();" />
       </form>
-      
    </body>
 </html>
 ```
@@ -709,7 +671,6 @@ The try...catch...finally Statement
 ## JavaScript - Form Validation
 ```html
 <html>
-   
    <head>
       <title>Form Validation</title>
       
@@ -718,9 +679,7 @@ The try...catch...finally Statement
             // Form validation code will come here.
          //-->
       </script>
-      
    </head>
-   
    <body>
       <form action="/cgi-bin/test.cgi" name="myForm" onsubmit="return(validate());">
          <table cellspacing="2" cellpadding="2" border="1">
@@ -759,7 +718,6 @@ The try...catch...finally Statement
             
          </table>
       </form>
-      
    </body>
 </html>
 ```
