@@ -1,4 +1,4 @@
-## Getting Started with Javascript
+## Getting Started with JavaScript
 * *Javascript is a lightweight, interpreted programming language.*
 * It is designed for creating network-centric applications.
 * Javascript is very easy to implement because it is integrated with HTML.
@@ -6,7 +6,7 @@
 This is a short guide to help you build dynamic web pages and web applications.
 
 
-## Your First Javascript Program
+## Your First JavaScript Program
 \<script>... ***CODES*** ...\</script>
 ```html
 <html>
@@ -24,14 +24,14 @@ Attr:
 - *src* -> **include**
 
 
-## Javascript - Placement in html file
-* in *\<head>...\</head>* section.
-* in *\<body>...\</body>* section.
-* in *\<body>...\</body>* and *\<head>...\</head>* sections.
-* in an external file and then *include in \<head>...\</head>* section.
+## JavaScript - Placement in html file
+* in ***\<head>...\</head>*** section.
+* in ***\<body>...\</body>*** section.
+* in ***\<body>...\</body>*** and *\<head>...\</head>* sections.
+* in an external file and then ***include in \<head>...\</head>*** section.
 
 
-## Javascript - Syntax
+## JavaScript - Syntax
 The *\<script>* tag alerts the browser program to start interpreting all the text between these tags as a script.
 ```html
 <script language="javascript" type="text/javascript">
