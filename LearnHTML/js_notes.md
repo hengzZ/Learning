@@ -1,13 +1,13 @@
-## Getting started with JavaScript
-* *JavaScript is a lightweight, interpreted programming language.*
+## Getting Started with Javascript
+* *Javascript is a lightweight, interpreted programming language.*
 * It is designed for creating network-centric applications.
-* JavaScript is very easy to implement because it is integrated with HTML.
+* Javascript is very easy to implement because it is integrated with HTML.
 
 This is a short guide to help you build dynamic web pages and web applications.
 
 
-## Your first javascript program
-\<script>... codes ...\</script>
+## Your First Javascript Program
+\<script>... ***CODES*** ...\</script>
 ```html
 <html>
    <body>
@@ -19,38 +19,39 @@ This is a short guide to help you build dynamic web pages and web applications.
    </body>
 </html>
 ```
+Attr:
 - *language* or *type* -> **source code**
 - *src* -> **include**
 
 
-## JavaScript - Placement in HTML File
-* in \<head>...\</head> section.
-* in \<body>...\</body> section.
-* in \<body>...\</body> and \<head>...\</head> sections.
-* in an external file and then include in \<head>...\</head> section.
+## Javascript - Placement in html file
+* in *\<head>...\</head>* section.
+* in *\<body>...\</body>* section.
+* in *\<body>...\</body>* and *\<head>...\</head>* sections.
+* in an external file and then *include in \<head>...\</head>* section.
 
 
-## JavaScript - Syntax
-The **\<script>** tag alerts the browser program to start interpreting all the text between these tags as a script. A simple syntax of your JavaScript will appear as follows:
+## Javascript - Syntax
+The *\<script>* tag alerts the browser program to start interpreting all the text between these tags as a script.
 ```html
 <script language="javascript" type="text/javascript">
-   JavaScript code
+   javascript code
 </script>
 ```
-* **Semicolons** - Simple statements in JavaScript are generally followed by a semicolon character, just as they are in C, C++, and Java.
-* **Case Sensitivity** - JavaScript is a case-sensitive language.
-* **Comments** - JavaScript supports both C-style and C++-style comments.
+* *分号结尾* - simple statements in javascript are generally followed by a semicolon character, just as they are in c, c++, and java.
+* *大小写敏感* - javascript is a case-sensitive language.
+* *标准c注释风格* - javascript supports both c-style and c++-style comments.
 
 
 ## JavaScript - Variables
-JavaScript allows you to work with three *primitive* data types −
-* **Numbers**, eg. 123, 120.50 etc.
-* **Strings** of text e.g. "This text string" etc.
-* **Boolean** e.g. true or false.
+Three ***primitive*** data types:
+* ***Numbers*** eg: 123, 120.50 etc.
+* ***Strings*** eg: "This text string" etc.
+* ***Boolean*** eg: *true* or *false*.
 
-JavaScript also defines two trivial data types, **null** and **undefined**.
+*Javascript also defines two trivial data types, **null** and **undefined**.*
 
-**JavaScript is untyped language**. Variables are declared with the **var** keyword as follows:
+*Javascript is untyped language and variables are declared with **var***
 ```html
 <script type="text/javascript">
    <!--
@@ -61,17 +62,17 @@ JavaScript also defines two trivial data types, **null** and **undefined**.
 </script>
 ```
 
-JavaScript variables have only two scopes.
-* **Global** - A global variable has global scope which means it can be defined anywhere in your JavaScript code.
-* **Local** - A local variable will be visible only within a function where it is defined. Function parameters are always local to that function.
+Javascript variables have only two scopes.
+* *Global Scope* - This means the variable can be defined anywhere in your javascript code.
+* *Local Scope* - This variable will be visible only within the function where it is defined. Function parameters are always local to that function.
 ```html
 <html>
    <body onload = checkscope();>
       <script type = "text/javascript">
          <!--
-            var myVar = "global"; // Declare a global variable
+            var myVar = "global";  // declare a global variable
             function checkscope( ) {
-               var myVar = "local";  // Declare a local variable
+               var myVar = "local";  // declare a local variable
                document.write(myVar);
             }
          //-->
@@ -79,7 +80,7 @@ JavaScript variables have only two scopes.
    </body>
 </html>
 ```
-If you declare a local variable or function parameter with the same name as a global variable, you effectively hide the global variable.
+*If you declare a local variable or function parameter with the same name as a global variable, you effectively hide the global variable.*
 
 
 ## JavaScript - Control Statement
