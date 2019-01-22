@@ -7,3 +7,18 @@ my learning memo
 
 ## Next Step - Structure of Code
 *Like a machine, I just design a **clear prototype** and then give it original power and join the evolution.*
+
+
+
+# TODO
+
+Basic Skills (***Designer's internal power***):
+* LearnStructureOfCode
+* LearnDS2MM
+
+Communication Skills (***Emotional Quotient***):
+* LearnEnglish
+
+Practices (***What's your value?***):
+* vuejs_app
+* java_app
