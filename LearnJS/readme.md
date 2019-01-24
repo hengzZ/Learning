@@ -1,5 +1,5 @@
 # JavaScript Learning Note
-* For basic syntax, please read: [my another note](../LearnHTML/js_notes.md)
+* For basic syntax, please read: [js_notes.md](js_notes.md)
 * **This note contains some advance feature:**
 
 
