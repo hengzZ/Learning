@@ -1,9 +1,8 @@
-## json
-*JSON or JavaScript Object Notation is a lightweight text-based open standard designed for human-readable data interchange.*
-
+## JSON
+***JSON or JavaScript Object Notation is a lightweight text-based open standard designed for human-readable data interchange.*** <br>
 JSON Internet Media type is **application/json**.
 
-***JSON 文件大多以 { 开头。一个文件即是一个对象，Array 也是 javascript 对象。***
+###### JSON 文件大多以 { 开头。一个文件即是一个对象，Array 也是 javascript 对象。
 ###### javascript 是一个面向对象语言，对象是最基本的数据类型（primitive）。
 
 
@@ -38,9 +37,9 @@ First, Let's see a piece of code **\[json.html]**:
 ```
 
 ***JSON syntax is basically considered as a subset of JavaScript syntax;*** it includes the following −
-* 数据以键值对表示。(Data is represented in name/value pairs.)
-* 大括号声明一个对象，每个名字后面跟随一个冒号（:），键值对以逗号（,）分隔。
-* 方括号声明一个数组，每个值以逗号（,）分隔。
+1. 数据以键值对表示。(Data is represented in name/value pairs.)
+1. 大括号声明一个对象，每个名字后面跟随一个冒号（:），键值对以逗号（,）分隔。
+1. 方括号声明一个数组，每个值以逗号（,）分隔。
 
 示例：
 ```
