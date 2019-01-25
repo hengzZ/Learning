@@ -1,4 +1,4 @@
-## 模型格式
+## TensorFlow 模型格式
 ### 1. CheckPoint(*.ckpt)
 训练过程中每迭代若干轮保存一次权值到磁盘，称为 “checkpoint”。
 ```bash
@@ -31,7 +31,7 @@ saved_model.pd
 saved_model.pb（或 saved_model.pbtxt）包含使用 MetaGraphDef protobuf 对象定义的计算图；assets 包含附加文件；variables 目录包含 tf.train.Saver() 对象调用 save() API 生成的权值文件。
 
 
-## 使用 ckpt 和 pd 初始化模型
+## 示例1. ckpt 和 pd 模型初始化
 ```python
 #!/usr/bin/python
 import sys
@@ -60,4 +60,38 @@ def main():
 
 if __name__ == "__main__":
         sys.exit(main())
+```
+
+
+## 示例2. OpenVINO 适配 TensorFlow 模型
+
+#### 情形1. Load Non-Frozen Models to the Model Optimizer (OpenVINO)
+三种 Non-Frozen 模型：
+* Checkpoint （两个文件）
+    * inference_graph.pb or inference_graph.pbtxt （模型）
+    * checkpoint_file.ckpt （权重）
+* MetaGraph （三或四个文件）
+    * model_name.meta
+    * model_name.index
+    * model_name.data-00000-of-00001 (digit part may vary)
+    * checkpoint (optional)
+* SavedModel - a special directory with a .pb file and several subfolders: variables, assets, and assets.extra.
+
+#### 情形2. Load Frozen Models to the Model Optimizer (OpenVINO)
+
+##### Step1. Freeze Custom Models in Python
+###### When a network is defined in Python* code, such as graphs are built in a form that allows model training. That means that all trainable parameters are represented as variables in the graph. To use the graph with the Model Optimizer, it should be frozen (***save the graph into a file***).
+
+```python
+# 将模型保存为 frozen 形式
+import tensorflow as tf
+from tensorflow.python.framework import graph_io
+
+frozen = tf.graph_util.convert_variables_to_constants(sess, sess.graph_def, ["<name_of_the_output_node>"])
+graph_io.write_graph(frozen, './', 'inference_graph.pb', as_text=False)
+```
+
+##### Step2. Convert TF model to OpenVino IR (Intermediate  Representation)
+```bash
+python3 mo_tf.py --input_model <INPUT_MODEL>.pb
 ```
