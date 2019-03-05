@@ -23,15 +23,17 @@ def get_parser():
 
 
 def review_mask(image_folder, mask_foler):
-    for image in os.listdir(image_folder):
-        image_file = os.path.join(image_folder, image)
-        mask_file = os.path.join(mask_folder, image.split('.')[0] + '.png')
+    for mask in os.listdir(mask_folder):
+        image_file = os.path.join(image_folder, mask.split('.')[0] + '.bmp')  # bmp image
+        mask_file = os.path.join(mask_folder, mask)
         org_im = cv2.imread(image_file)
         mask_im = cv2.imread(mask_file)
         mixed_im = cv2.addWeighted(mask_im, 0.5, org_im, 0.5, 0)
 
+        resized_im = cv2.resize(mixed_im, (640, 480))
+
         cv2.imwrite('temp.jpg', mixed_im)
-        cv2.imshow('review', mixed_im)
+        cv2.imshow('review', resized_im)
         keyval = cv2.waitKey(0)
         if keyval == 27: break
     cv2.destroyAllWindows()
