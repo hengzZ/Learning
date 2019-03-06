@@ -2,6 +2,7 @@
 import os
 import sys
 import argparse
+import shutil
 
 import numpy as np
 from PIL import Image
@@ -35,6 +36,12 @@ def review_mask(image_folder, mask_foler):
         cv2.imwrite('temp.jpg', mixed_im)
         cv2.imshow('review', resized_im)
         keyval = cv2.waitKey(0)
+        if keyval == ord('s'):
+            dest_dir = os.path.join(mask_folder, '../save')
+            if not os.path.exists(dest_dir):
+                os.makedirs(dest_dir)
+            dest_file = os.path.join(dest_dir, mask)
+            shutil.move(mask_file, dest_file)
         if keyval == 27: break
     cv2.destroyAllWindows()
     return 0
