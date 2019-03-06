@@ -5369,7 +5369,7 @@ layer {
   }
   convolution_param {
     num_output: 4096
-    pad: 0
+    pad: 3
     kernel_size: 7
     stride: 1
   }
@@ -5473,7 +5473,7 @@ layer {
   }
   convolution_param {
     num_output: 2
-    pad: 0
+    pad: 1
     kernel_size: 1
   }
 }
@@ -5485,7 +5485,7 @@ layer {
   top: "score_pool4c"
   crop_param {
     axis: 2
-    offset: 5
+    offset: 0
   }
 }
 layer {
@@ -5528,7 +5528,7 @@ layer {
   }
   convolution_param {
     num_output: 2
-    pad: 0
+    pad: 3
     kernel_size: 1
   }
 }
@@ -5540,7 +5540,7 @@ layer {
   top: "score_pool3c"
   crop_param {
     axis: 2
-    offset: 9
+    offset: 0
   }
 }
 layer {
@@ -5576,7 +5576,7 @@ layer {
   top: "score"
   crop_param {
     axis: 2
-    offset: 31
+    offset: 28
   }
 }
 

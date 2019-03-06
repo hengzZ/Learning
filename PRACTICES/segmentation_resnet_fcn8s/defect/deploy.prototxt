@@ -5,7 +5,7 @@ layer {
   input_param {
     # These dimensions are purely for sake of example;
     # see infer.py for how to reshape the net to the given input size.
-    shape { dim: 1 dim: 3 dim: 500 dim: 500 }
+    shape { dim: 1 dim: 3 dim: 480 dim: 640 }
   }
 }
 
@@ -4536,7 +4536,7 @@ layer {
   }
   convolution_param {
     num_output: 4096
-    pad: 0
+    pad: 3
     kernel_size: 7
     stride: 1
   }
@@ -4628,7 +4628,7 @@ layer {
   }
   convolution_param {
     num_output: 2
-    pad: 0
+    pad: 1
     kernel_size: 1
   }
 }
@@ -4641,7 +4641,7 @@ layer {
   top: "score_pool4c"
   crop_param {
     axis: 2
-    offset: 5
+    offset: 0
   }
 }
 
@@ -4687,7 +4687,7 @@ layer {
   }
   convolution_param {
     num_output: 2
-    pad: 0
+    pad: 3
     kernel_size: 1
   }
 }
@@ -4700,7 +4700,7 @@ layer {
   top: "score_pool3c"
   crop_param {
     axis: 2
-    offset: 9
+    offset: 0
   }
 }
 
@@ -4739,6 +4739,6 @@ layer {
   top: "score"
   crop_param {
     axis: 2
-    offset: 31
+    offset: 28
   }
 }
