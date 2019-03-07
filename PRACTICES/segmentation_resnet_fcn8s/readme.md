@@ -11,6 +11,8 @@ cp Makefile.config.example Makefile.config
 ```
 
 #### 2. Model Modification
+1. You can combine a basic network structure into the fcn, such as combine resnet-101 with fcn8s
+2. Modify the ***input_layers.py*** to adapt your input image and label mask.
 
 
 
