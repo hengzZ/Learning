@@ -5372,6 +5372,10 @@ layer {
     pad: 3
     kernel_size: 7
     stride: 1
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5407,6 +5411,10 @@ layer {
     pad: 0
     kernel_size: 1
     stride: 1
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5441,6 +5449,10 @@ layer {
     num_output: 2
     pad: 0
     kernel_size: 1
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5456,6 +5468,10 @@ layer {
     bias_term: false
     kernel_size: 4
     stride: 2
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5475,6 +5491,10 @@ layer {
     num_output: 2
     pad: 1
     kernel_size: 1
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5511,6 +5531,10 @@ layer {
     bias_term: false
     kernel_size: 4
     stride: 2
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5530,6 +5554,10 @@ layer {
     num_output: 2
     pad: 3
     kernel_size: 1
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
@@ -5566,6 +5594,10 @@ layer {
     bias_term: false
     kernel_size: 16
     stride: 8
+    weight_filler {
+        type: "gaussian"
+        std: 0.01
+    }
   }
 }
 layer {
