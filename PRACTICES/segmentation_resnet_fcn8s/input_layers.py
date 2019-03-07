@@ -2,6 +2,7 @@ import caffe
 
 import numpy as np
 from PIL import Image
+import cv2
 
 import random
 
@@ -64,8 +65,8 @@ class VOCSegDataLayer(caffe.Layer):
 
     def reshape(self, bottom, top):
         # load image + label image pair
-        self.data = self.load_image(self.indices[self.idx])
-        self.label = self.load_label(self.indices[self.idx])
+        self.data = self.customized_load_image(self.indices[self.idx])
+        self.label = self.customized_load_label(self.indices[self.idx])
         # reshape tops to fit (leading 1 is for batch dimension)
         top[0].reshape(1, *self.data.shape)
         top[1].reshape(1, *self.label.shape)
@@ -89,6 +90,29 @@ class VOCSegDataLayer(caffe.Layer):
         pass
 
 
+    def customized_load_image(self, idx):
+        """
+        Customized loading function, which comes from load_image.
+        """
+        im = cv2.imread('{}/JPEGImages/{}.bmp'.format(self.voc_dir, idx))
+        im = cv2.resize(im, (640,480))
+        in_ = np.array(im, dtype=np.float32)
+        in_ = in_/255.
+        in_ = in_.transpose((2,0,1))  # HWC -> CHW
+        return in_
+
+
+    def customized_load_label(self, idx):
+        """
+        Customized loading function, which comes from load_label.
+        """
+        im = Image.open('{}/SegmentationClass/{}.png'.format(self.voc_dir, idx))
+        im = im.resize((640,480), Image.BILINEAR)
+        label = np.array(im, dtype=np.uint8)
+        label = label[np.newaxis, ...]
+        return label
+
+
     def load_image(self, idx):
         """
         Load input image and preprocess for Caffe:
@@ -99,9 +123,9 @@ class VOCSegDataLayer(caffe.Layer):
         """
         im = Image.open('{}/JPEGImages/{}.jpg'.format(self.voc_dir, idx))
         in_ = np.array(im, dtype=np.float32)
-        in_ = in_[:,:,::-1]
+        in_ = in_[:,:,::-1]  # RGB -> BGR
         in_ -= self.mean
-        in_ = in_.transpose((2,0,1))
+        in_ = in_.transpose((2,0,1))  # HWC -> CHW
         return in_
 
 
