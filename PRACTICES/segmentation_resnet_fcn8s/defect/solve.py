@@ -11,22 +11,22 @@ try:
 except:
     pass
 
-weights = '../voc-fcn16s/voc-fcn16s.caffemodel'
+weights = '../base-resnet-101.caffemodel'
 
 # init
-caffe.set_device(int(sys.argv[1]))
+caffe.set_device(int(0))  # gpu 0
 caffe.set_mode_gpu()
 
 solver = caffe.SGDSolver('solver.prototxt')
 solver.net.copy_from(weights)
 
-# surgeries
-interp_layers = [k for k in solver.net.params.keys() if 'up' in k]
-surgery.interp(solver.net, interp_layers)
+## surgeries
+#interp_layers = [k for k in solver.net.params.keys() if 'up' in k]
+#surgery.interp(solver.net, interp_layers)
 
 # scoring
-val = np.loadtxt('../data/segvalid11.txt', dtype=str)
+val = np.loadtxt('../dataset/defect/ImageSets/Segmentation/val.txt', dtype=str)
 
 for _ in range(25):
-    solver.step(4000)
+    solver.step(1000)
     score.seg_tests(solver, False, val, layer='score')
