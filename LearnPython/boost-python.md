@@ -81,8 +81,76 @@ hello, world
 
 #### 3. 使用 C++ 编写 Python 扩展模块
 
-##### 3.1 编写 c++ demo
+##### 预热： boost-python 实现 c++ python 交互之 list - vector 互转
+###### 编写 wrapper API 时， 1. vector 数据需要被 vector_indexing_suite\<> 包裹； 2. python 数据转为 C++ 数据需要使用 boost::python::extract<> 函数。
+* cpp code
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
 
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+
+
+typedef std::vector<std::string> MyList;
+class MyClass {
+public:
+  void myFuncDump()
+  {
+    for (int i=0; i<m_list.size(); i++)
+    {
+      std::cout << m_list[i];
+    }
+    std::cout << std::endl;
+  }
+  void myFuncSet(boost::python::list pylist)
+  {
+    m_list.clear();
+    for (int i=0; i<len(pylist); i++)
+    {
+      m_list.push_back(boost::python::extract<std::string>(pylist[i]));
+    }
+  }
+private:
+  MyList m_list;
+};
+
+
+// Wrapper code
+
+using namespace boost::python;
+
+BOOST_PYTHON_MODULE(mymodule)
+{
+  class_<MyClass>("MyClass")
+   .def("myFuncDump", &MyClass::myFuncDump)
+   .def("myFuncSet", &MyClass::myFuncSet)
+   ;
+}
+```
+* build
+```bash
+g++ -Wall -O3 -std=c++11 -shared -fPIC -I/usr/include/python2.7 -lboost_python main.cpp -o mymodule.so
+```
+* test code
+```python
+from mymodule import MyClass
+
+if __name__ == '__main__':
+    myclass = MyClass()
+
+    mylist = ['hello', ',', 'world']
+    myclass.myFuncSet(mylist)
+    myclass.myFuncDump()
+```
+
+参考手册： https://www.boost.org/doc/libs/1_61_0/libs/python/doc/html/tutorial/index.html
+
+##### 3.1 编写 c++ demo
+```cpp 
+
+```
 
 ##### 3.2 编写 Boost.Python wrapper
 
