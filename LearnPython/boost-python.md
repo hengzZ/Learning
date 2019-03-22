@@ -149,13 +149,150 @@ if __name__ == '__main__':
 
 ##### 3.1 编写 c++ demo
 ```cpp 
+#include <Python.h>
 
+// Produce deprecation warnings (needs to come before arrayobject.h inclusion).
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#include <numpy/arrayobject.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <cstring>
+
+// Temporary solution for numpy < 1.7 versions: old macro, no promises.
+// You're strongly advised to upgrade to >= 1.7.
+#ifndef NPY_ARRAY_C_CONTIGUOUS
+#define NPY_ARRAY_C_CONTIGUOUS NPY_C_CONTIGUOUS
+#define PyArray_SetBaseObject(arr, x) (PyArray_BASE(arr) = (x))
+#endif
+
+/* Fix to avoid registration warnings */
+#define BP_REGISTER_SHARED_PTR_TO_PYTHON(PTR) do { \
+  const boost::python::type_info info = \
+    boost::python::type_id<shared_ptr<PTR > >(); \
+  const boost::python::converter::registration* reg = \
+    boost::python::converter::registry::query(info); \
+  if (reg == NULL) { \
+    bp::register_ptr_to_python<shared_ptr<PTR > >(); \
+  } else if ((*reg).m_to_python == NULL) { \
+    bp::register_ptr_to_python<shared_ptr<PTR > >(); \
+  } \
+} while (0)
+
+namespace bp = boost::python;
+
+// For Python, for now, we'll just always use float as the type.
+typedef float Dtype;
+const int NPY_DTYPE = NPY_FLOAT32;
+
+// Check the PyArrary transformed from python into C++
+void CheckContiguousArray(PyArrayObject* arr, std::string name,
+    int batch, int channels, int height, int width) {
+  if (!(PyArray_FLAGS(arr) & NPY_ARRAY_C_CONTIGUOUS)) {
+    throw std::runtime_error(name + " must be C contiguous");
+  }
+  if (PyArray_NDIM(arr) != 4) {
+    throw std::runtime_error(name + " must be 4-d");
+  }
+  if (PyArray_TYPE(arr) != NPY_FLOAT32) {
+    throw std::runtime_error(name + " must be float32");
+  }
+  if (PyArray_DIMS(arr)[0] != batch) {
+    throw std::runtime_error(name + " has wrong number of batch");
+  }
+  if (PyArray_DIMS(arr)[1] != channels) {
+    throw std::runtime_error(name + " has wrong number of channels");
+  }
+  if (PyArray_DIMS(arr)[2] != height) {
+    throw std::runtime_error(name + " has wrong height");
+  }
+  if (PyArray_DIMS(arr)[3] != width) {
+    throw std::runtime_error(name + " has wrong width");
+  }
+}
+
+// Convert bp object from list to vector
+std::vector<std::string> ConvertBpListToVector(const bp::object& list)
+{
+  std::vector<std::string> string_vector;
+  if (!list.is_none()) {
+    for (int i = 0; i < len(list); i++) {
+      string_vector.push_back(bp::extract<std::string>(list[i]));
+    }
+  }
+  return string_vector;
+}
+
+// Convert bp object from python str to stl string
+std::string ConvertBpStrToString(const bp::object& str)
+{
+  std::string ret_string;
+  if (!str.is_none()) {
+    ret_string = bp::extract<std::string>(str);
+  }
+  return ret_string;
+}
+
+// Copy bp array into c++ memory block
+void SetInputArray(bp::object data_obj, int batch, int channels, int height, int width)
+{
+  // check that we were passed appropriately-sized contiguous memory
+  PyArrayObject* data_arr = reinterpret_cast<PyArrayObject*>(data_obj.ptr());
+  CheckContiguousArray(data_arr, "data array", batch, channels, height, width);
+  // get the memory ptr
+  Dtype* ptr = static_cast<Dtype*>(PyArray_DATA(data_arr));
+  std::memset(ptr, 0, batch*channels*height*width*sizeof(Dtype));
+}
+
+
+BOOST_PYTHON_MODULE(mymodule)
+{
+  bp::def("set_input_array", &SetInputArray);
+}
 ```
 
 ##### 3.2 编写 Boost.Python wrapper
-
+```
+Part I:
+    编写 API， 以接收 or 返回 bp::object 对象， 实现交互。
+Part II:
+    导出接口
+    BOOST_PYTHON_MODULE()
+    {
+      bp::def("func_name", &func_name);
+      bp::class_<ClassName>("ClassName")
+        .add_property("property_name", &ClassName::m_PropertyName)
+        .def("method_name", &ClassName::MethodName)
+    }
+```
 
 ##### 3.3 编译
-
+```bash
+g++ -Wall -O3 -std=c++11 -shared -fPIC -I/usr/include/python2.7 -lboost_python main.cpp -o mymodule.so
+```
 
 ##### 3.4 测试
+```python
+import numpy as np
+from mymodule import set_input_array
+
+
+if __name__ == '__main__':
+
+    batch = 4
+    channels = 3
+    height = 299
+    width = 299
+
+    im = np.ones((batch,channels, height, width), dtype=np.float32)
+    print(im.shape, im)
+    set_input_array(im, batch, channels, height, width)
+    print(im.shape, im)
+```
+
+###### 关于 Boost.Python 的复杂使用方法，请阅读 pycaffe 封装代码：
+https://github.com/BVLC/caffe/blob/master/python/caffe/_caffe.cpp
