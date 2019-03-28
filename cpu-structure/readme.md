@@ -21,8 +21,8 @@
 # 超标量流水计算机工作方式
 一般的流水计算机因只有一条指令流水线，所以称为标量流水计算机。所谓超标量（Superscalar）流水计算机，是指它具有两条以上的指令流水线。
 ```
-超标量流水
-<img src="pics/superscalar-pipeline.jpg" width="45%">
+* 超标量流水<br>
+<img src="pics/superscalar-pipeline.jpg" width="45%" align="center">
 
 #### 三、指令的相关性
 要使流水线发挥高效率，就要使流水线连续不断地流动，尽量不出现断流情况。然而，由于流水过程中存在的相关性冲突，断流现象是不可避免的。
@@ -132,17 +132,17 @@ Nehalem 处理器的 L3 采用了非独占高速缓存设计(或者说“包含�
 
 ### Part II - CPU 微架构（模块划分）
 
-CPU 微架构图：
-<img src="pics/cpu-microstructure.png" width="55%">
+* CPU 微架构图：<br>
+<img src="pics/cpu-microstructure.png" width="55%" align="center">
 
-Top-Down 分析方法： 前端(frontend)、后端(backend)、错误预测(bad speculation)、回退(retiring)。
-<img src="pics/cpu-micro-op-pipeline.jpg" width="55%"> <br>
+* Top-Down 分析方法 - 前端(frontend)、后端(backend)、错误预测(bad speculation)、回退(retiring)：<br>
+<img src="pics/cpu-micro-op-pipeline.jpg" width="55%" align="center"> <br>
 
-四部分的解释：
-<img src="pics/4-parts.jpg" width="55%"> <br>
+* 四部分的解释：<br>
+<img src="pics/4-parts.jpg" width="55%" align="center"> <br>
 
-Top-Down 统计实例(划分)：
-<img src="pics/category-classification.jpg" width="45%">
+* Top-Down 统计实例(划分)：<br>
+<img src="pics/category-classification.jpg" width="45%" align="center">
 
 
 ###### reference
