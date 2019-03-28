@@ -145,6 +145,13 @@ Nehalem 处理器的 L3 采用了非独占高速缓存设计(或者说“包含�
 <img src="pics/category-classification.jpg" width="45%" align="center">
 
 
+### Part III - CPU 微架构分析思路
+
+<img src="pics/cpu-microstructure-analysis-idea.jpg" width="75%" align="center">
+
+
+<br>
+<br>
 ###### reference
 [1] https://my.oschina.net/fileoptions/blog/1633021 <br>
 [2] **Top-Down 分析理论：** https://sites.google.com/site/analysismethods/yasin-pubs
