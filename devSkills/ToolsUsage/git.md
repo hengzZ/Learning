@@ -110,3 +110,9 @@ pip install git+https://github.com/wkentaro/labelme.git
 在本地删除一个分支： git branch -d newBranch
 在 github 远程端删除一个分支： git push origin :newBranch   (分支名前的冒号代表删除)
 ```
+
+##### 18. 分支合并
+```
+git checkout master
+git merge [newBranch]  (将 newBranch 合并入 master 分支)
+```
