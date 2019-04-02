@@ -133,25 +133,25 @@ Nehalem 处理器的 L3 采用了非独占高速缓存设计(或者说“包含�
 ### Part II - CPU 微架构（模块划分）
 
 * CPU 微架构图：<br>
-<img src="pics/cpu-microstructure.png" width="55%" align="center">
+<div align="center"><img src="pics/cpu-microstructure.png" width="55%"></div> <br>
 
 * Top-Down 分析方法 - 前端(frontend)、后端(backend)、错误预测(bad speculation)、回退(retiring)：<br>
-<img src="pics/cpu-micro-op-pipeline.jpg" width="55%" align="center"> <br>
+<img src="pics/cpu-micro-op-pipeline.jpg" width="45%"><img src="pics/top-down.png" width="45%"> <br>
 
 * 四部分的解释：<br>
-<img src="pics/4-parts.jpg" width="55%" align="center"> <br>
+<div align="center"><img src="pics/4-parts.jpg" width="45%"></div> <br>
 
 * Top-Down 统计实例(划分)：<br>
-<img src="pics/category-classification.jpg" width="45%" align="center">
+<div align="center"><img src="pics/category-classification.jpg" width="45%"></div>
 
 
 ### Part III - CPU 微架构分析思路
 
-<img src="pics/cpu-microstructure-analysis-idea.jpg" width="75%" align="center">
-
+<img src="pics/cpu-microstructure-analysis-idea.jpg" width="75%">
 
 <br>
 <br>
-###### reference
+
+###### reference 
 [1] https://my.oschina.net/fileoptions/blog/1633021 <br>
 [2] **Top-Down 分析理论：** https://sites.google.com/site/analysismethods/yasin-pubs
