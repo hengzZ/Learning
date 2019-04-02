@@ -94,11 +94,25 @@ $ git fetch // 效果：get pull = git fetch + git merge
 
 ##### 15. 提交代码到一个新的分支
 ```
-$ git branch [branch name]  # 创建本地分支
+$ git branch [branch name]  # 创建一个新的本地分支
 $ git push origin [branch name]  # 推到远端分支
 ```
 
 ##### 16. 从 Github 安装 python 包
 ```
 pip install git+https://github.com/wkentaro/labelme.git
+```
+
+##### 17. 创建、删除分支
+```
+在本地新建一个分支： git branch [newBranch]
+将新分支发布在 github 上： git push origin [newBranch]
+在本地删除一个分支： git branch -d newBranch
+在 github 远程端删除一个分支： git push origin :newBranch   (分支名前的冒号代表删除)
+```
+
+##### 18. 分支合并
+```
+git checkout master
+git merge [newBranch]  (将 newBranch 合并入 master 分支)
 ```
