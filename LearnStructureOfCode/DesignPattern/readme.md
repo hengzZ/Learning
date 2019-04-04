@@ -27,13 +27,40 @@
 <br>
 
 **创造型模式**
-* 1.单例模式
+```
+1. 简单工厂模式 （Simple Factory Pattern）         （难度：2 频率：3）
+2. 工厂方法模式 （Factory Method Pattern）         （难度：2 频率：5）
+3. 抽象工厂模式 （Abstract Factory Pattern）       （难度：4 频率：5）
+4. 单例模式 （Singleton Pattern）             （难度：1 频率：4）
+5. 原型模式 （Prototype Pattern）             （难度：3 频率：3）
+6. 建造者模式 （Builder Pattern）             （难度：4 频率：2）
+```
 
 **结构型模式**
-* 
+```
+1. 适配器模式 （Adapter Pattern）      （难度：2 频率：4）
+2. 桥接模式   （Bridge Pattern）       （难度：3 频率：3）
+3. 组合模式   （Composite Pattern）    （难度：3 频率：4）
+4. 装饰模式   （Decorator Pattern）    （难度：3 频率：3）
+5. 外观模式   （Facade Pattern）       （难度：1 频率：5）
+6. 享元模式   （Flyweight Pattern）    （难度：4 频率：1）
+7. 代理模式   (Proxy Pattern)        （难度：3 频率：4）
+```
 
 **行为型模式**
-*
+```
+1. 职责链模式 （Chain of Responsibility Pattern）   （难度：3 频率：2）
+2. 命令模式   （Command Pattern）                   （难度：3 频率：4）
+3. 解释器模式 （Interpreter Pattern）               （难度：5 频率：1）
+4. 迭代器模式 （Iterator Pattern）                  （难度：3 频率：5）
+5. 中介者模式 （Mediator Pattern）                  （难度：3 频率：2）
+6. 备忘录模式 （Memento Pattern）                   （难度：2 频率：2）
+7. 观察者模式 （Observer Pattern）                  （难度：3 频率：5）
+8. 状态模式   （State Pattern）                     （难度：3 频率：3）
+9. 策略模式   （Strategy Pattern）                  （难度：1 频率：4）
+10. 模板方法模式 （Template Method Pattern）        （难度：2 频率：3）
+11. 访问者模式   （Visitor Patter）                 （难度：4 频率：1）
+```
 
 
 <br>
