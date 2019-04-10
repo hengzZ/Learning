@@ -15,10 +15,11 @@
 
 主原则：
 * “单一职责原则” （SRP）
+* “开闭原则” （OCP）
 * McCabe 代码复杂度
 
-Design Pattern: <br>
-[Go to Quick Start (Tutorial)](DesignPattern/)
+设计模式 <br>
+请转到：[DesignPattern](DesignPattern/)
 
 
 ## Part 2. 重构法则
@@ -26,7 +27,10 @@ Design Pattern: <br>
 重点：
 * 降低代码的腐化速度，降低重构投入
 
-Refacter: <br>
+重构 - 改善既有代码的设计 <br>
+(首要，什么是不好的代码风格，代码的坏味道。目前发展到什么程度)
+
+Refactor <br>
 
 
 
