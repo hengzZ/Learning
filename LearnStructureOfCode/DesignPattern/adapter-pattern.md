@@ -1,12 +1,12 @@
 ## 适配器模式
 
 #### 1. 案例： 没有源码的算法库
-<div align="center"><img src="pics/adapter-pattern-1.jpg" width="45%"></div>
+<div align="center"><img src="pics/adapter-pattern-1.jpg" width="55%"></div>
 
 #### 2. 适配器模式
 引入了一个被称为适配器 (Adapter) 的包装类，而它所包装的对象称为适配者 (Adaptee)。
 Adapter 别名为包装器 (Wrapper)。 意义： 引入新的中间人来避免对旧有代码（接口）的修改，遵循 “开闭原则”。
-<div align="center"><img src="pics/adapter-pattern-2.jpg" width="45%"></div>
+<div align="center"><img src="pics/adapter-pattern-2.jpg" width="55%"></div>
 
 代码框架
 ```java
@@ -26,7 +26,7 @@ class Adapter extends Target {
 
 #### 3. 使用适配器模式来重用算法库中的算法
 ScoreOperation 接口充当抽象目标，QuickSort 和 BinarySearch 类充当适配者，OperationAdapter 充当适配器。
-<div align="center"><img src="pics/adapter-pattern-3.jpg" width="50%"></div>
+<div align="center"><img src="pics/adapter-pattern-3.jpg" width="65%"></div>
 
 代码框架
 ```java
@@ -204,7 +204,7 @@ class Client {
 
 #### 4. 类适配器
 类适配器模式和对象适配器模式最大的区别在于适配器和适配者之间的关系不同。 对象适配器模式中适配器和适配者之间是关联关系，而类适配器模式中适配器和适配者是继承关系。
-<div align="center"><img src="pics/adapter-pattern-4.jpg" width="45%"></div>
+<div align="center"><img src="pics/adapter-pattern-4.jpg" width="55%"></div>
 
 代码框架
 ```java
@@ -226,7 +226,7 @@ class Adapter extends Adaptee implements Target {
 
 #### 5. 双向适配器
 如果，适配器中同时包含对目标类和适配者类的引用，那么该适配器就是一个双向适配器。
-<div align="center"><img src="pics/adapter-pattern-5.jpg" width="50%"></div>
+<div align="center"><img src="pics/adapter-pattern-5.jpg" width="65%"></div>
 
 代码框架
 ```java
