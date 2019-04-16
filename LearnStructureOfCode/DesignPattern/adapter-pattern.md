@@ -264,7 +264,38 @@ class Adapter implements Target,Adaptee {
 
 代码框架
 ```java
+# 1. 常规接口类
 
+class ServiceInterface {
+    public void serviceMethod1() {
+        ……
+    }
+
+    public void serviceMethod2() {
+        ……
+    }
+
+    public void serviceMethod3() {
+        ……
+    }
+}
+
+# 2. 缺省适配器 （常规接口类的一个空实现版本！ 用于后续的选择性适配）
+（注意要使用抽象类来定义，而不能用接口类来定义）
+
+abstract class AbstractServiceClass {
+    public void serviceMethod1() { } //空实现
+    public void serviceMethod2() { }
+    public void serviceMethod3() { }
+}
+
+# 3. 具体类
+
+class ConcreteServiceClass extends AbstractServiceClass {
+    public void serviceMethod1() {
+        ……
+    }
+}
 ```
 说明
 ```
