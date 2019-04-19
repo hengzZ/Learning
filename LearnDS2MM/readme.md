@@ -1,13 +1,22 @@
 # Learn Data Structure and Memory Management
+数据结构 - “结构” v.s. “行为”
 
-* Data Structure
+## Part 1. Data Structure
     * C++ STL
 
-* Memory Management
+## Part2. Memory Management
     * C++ STL
     * clCaffe / darknet
     * Tensorflow
 
+## Part3. Algorithm
+
+###### reference
+《算法设计与分析基础》 - Anany Levitin
+
+<br>
+
+## STL
 
 * **STL所实现的，是依据泛型思维架设起来的一个概念结构。这个以抽象概念为主体而非以实际类为主体的结构，形成了一个严谨的接口标准。**
 
