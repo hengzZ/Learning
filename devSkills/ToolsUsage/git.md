@@ -116,3 +116,23 @@ pip install git+https://github.com/wkentaro/labelme.git
 git checkout master
 git merge [newBranch]  (将 newBranch 合并入 master 分支)
 ```
+
+##### 19. 解决： 文件超过 100 MB，导致 git push error.
+```
+1. 移除错误缓存 （例如：文件 libbaiduNaviSDK.a）
+git rm --cached -r sr/libbaiduNaviSDK.a
+2. 重新提交
+git commit --amend
+git push
+
+## 针对必须要上传的大文件 （请先从工程移出它们，然后使用 Git Large File Storage 统一上传！）
+1. 首先安装 git-lfs
+brew install git-lfs
+2. 待上传对象添加进 track：
+git lfs track "libbaiduNaviSDK.a"
+3. 将想要保存的大文件正常添加进 git：
+git add sr/libbaiduNaviSDK.a
+4. 正常进行提交 & 推送
+git commit -m "Add design file"
+git push origin master
+```
