@@ -43,6 +43,9 @@ n-ways Set-Associative，这个 n=1，就是直接映射；n=cache 大小，就�
 <div align="center"><img src="pics/cpu-cache-param.jpg" width="55%"></div>
 
 
+#### AMD CPU Cache 组成及交互方式
+<div align="center"><img src="pics/amd-cpu-cache-structure.png" width="65%"></div>
+
 
 ###### reference
 [1]: https://zhuanlan.zhihu.com/p/31859105 <br>
