@@ -3,6 +3,26 @@
 
 “微积分以及在此基础之上建立起来的数学分析体系造就了现代科学；而算法造就了现代世界。”
 
+* 蛮力法 （brute force and exhaustive search）
+* 减治法 （decrease and conquer）
+* 分治法 （divide and conquer）
+* 变治法 （transform and conquer）
+* 时空权衡 （space and time trade offs）
+* 动态规划 （dynamic programming）
+* 贪婪技术 （greedy technique）
+* 迭代改进 （iterative improvement）
+
+* 算法能力的极限 （limitations of algorithm power）
+    * 寻找下界 （lower bound arguments）
+    * 决策树 (decision tree)
+    * P、 NP 和 NP 完全问题 (NP complete problem)
+    * 数值算法 （numerical algorithms）
+* 应对算法能力的极限 （coping with the limitations of algorithm power）
+    * 回溯法 (back tracking)
+    * 分支界限法 (branch and bound)
+    * NP 困难问题的近似算法 (approximation algorithms for NP-Hard problems)
+    * 非线性方程的求解 (algorithms for solving nonlinear equations)
+
 <br>
 
 ### Part 1. 绪论
