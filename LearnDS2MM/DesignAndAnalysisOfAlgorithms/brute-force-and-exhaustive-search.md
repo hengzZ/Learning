@@ -18,7 +18,7 @@
 <br>
 
 ##### 1. 选择排序
-<div align="center"><img src="pics/selection-sort.jpg" width="60%"></div>
+<div align="center"><img src="pics/selection-sort.jpg" width="40%"></div>
 
 算法： Selection Sort
 ```
@@ -32,7 +32,7 @@ for i ← 0 to n-2 do
 ```
 
 ##### 2. 冒泡排序
-<div align="center"><img src="pics/bubble-sort.jpg" width="60%"></div>
+<div align="center"><img src="pics/bubble-sort.jpg" width="40%"></div>
 
 算法: Bubble Sort
 ```
@@ -56,7 +56,7 @@ else return -1
 ```
 
 ##### 4. 蛮力字符串匹配
-<div align="center"><img src="pics/brute-force-string-match.jpg" width="60%"></div>
+<div align="center"><img src="pics/brute-force-string-match.jpg" width="40%"></div>
 
 算法： BruteForceStringMatch
 ```
@@ -86,7 +86,7 @@ return d
 
 ##### 6. 凸包问题
 凸包能方便地提供目标形状或给定数据集的一个近似。
-<div align="center"><img src="pics/convex-hull-problem.jpg" width="60%"></div>
+<div align="center"><img src="pics/convex-hull-problem.jpg" width="40%"></div>
 
 * 凸集合 <br>
 对于平面上的一个点集合，如果以集合中任意两点 p 和 q 为端点的线段都属于该集合，我们说这个集合是凸的。
@@ -100,20 +100,20 @@ return d
 问题描述： 找出一条 n 个给定的城市间的最短路径，使我们在回到出发的城市之前，对每个城市都只访问一次。 （又名：图的最短哈密顿回路，Hamiltonian circuit）
 
 穷举
-<div align="center"><img src="pics/exhaustive-search-for-Hamiltonian-circuit.jpg" width="65%"></div>
+<div align="center"><img src="pics/exhaustive-search-for-Hamiltonian-circuit.jpg" width="45%"></div>
 
 ##### 8. 背包问题
 问题描述： 给定 n 个重量为 w1，w2，...，wn，价值为 v1，v2，...，vn 的物品和一个承重为 W 的背包。
 求这些物品中一个最有价值的子集，并且要能够装到背包中。
 
 穷举
-<div align="center"><img src="pics/exhaustive-search-for-package-problem.jpg" width="70%"></div>
+<div align="center"><img src="pics/exhaustive-search-for-package-problem.jpg" width="45%"></div>
 
 ##### 9. 分配问题
 问题描述： 有 n 个任务需要分配给 n 个人执行，一个任务只对应一个人。对于每一种匹配来说，将第 j 个任务分配给第 i 个人的成本是 C\[i,j\]。找出总成本最小的分配方案。
 
 穷举
-<div align="center"><img src="pics/exhaustive-search-for-assignment-problem.jpg" width="65%"></div>
+<div align="center"><img src="pics/exhaustive-search-for-assignment-problem.jpg" width="45%"></div>
 
 ##### 10. 深度优先查找
 深度优先查找遍历的时候往往构造一个所谓的深度优先查找森林。（depth-first search forest）
