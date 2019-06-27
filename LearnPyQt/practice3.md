@@ -62,6 +62,7 @@ Qt 样式表的思想很大程度上是来自于 HTML 的层叠式样式表(CSS)
 —— https://www.cnblogs.com/findumars/p/10278961.html
 
 https://doc.qt.io/qt-5/stylesheet-reference.html
+https://www.cnblogs.com/wangqiguo/p/4960776.html
 
 
 
