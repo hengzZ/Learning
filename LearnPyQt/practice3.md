@@ -61,10 +61,10 @@ Qt 样式表的思想很大程度上是来自于 HTML 的层叠式样式表(CSS)
 ##### QSS 常用语法
 —— https://www.cnblogs.com/findumars/p/10278961.html
 
-https://doc.qt.io/qt-5/stylesheet-reference.html
+* QSS 介绍 <br>
 https://www.cnblogs.com/wangqiguo/p/4960776.html
-
-
+* QSS 属性列表 <br>
+https://doc.qt.io/qt-5/stylesheet-reference.html#list-of-properties
 
 <br>
 
