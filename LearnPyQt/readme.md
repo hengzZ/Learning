@@ -4,13 +4,18 @@
 —— http://www.tutorialspoint.com/pyqt
 
 ##### 1.1 PyQt 简介
-PyQt is a GUI widgets toolkit. 
+*PyQt is a GUI widgets toolkit.*
 
 ##### 1.2 PyQt 版本
-* ***PyQt4***
-* ***PyQt5***
+* **PyQt4**
+* **PyQt5**
 
 PyQt4 同时支持 Python2 和 Python3，PyQt5 仅支持 Python3。
+
+安装
+```bash
+pip3 install --force-reinstall PyQt5==5.10.1
+```
 
 ##### 1.3 PyQt 的组成
 * ***QtCore*** —— 处理文件/目录等等的非 GUI 功能，以及 event loop， Qt’s signal and slot mechanism， animations 等等。
@@ -22,17 +27,17 @@ PyQt4 同时支持 Python2 和 Python3，PyQt5 仅支持 Python3。
     * ***QtSql*** —— SQL
     * ***QtWebEngineWidgets*** —— 一个 web browser 的实现，取代（supersede）旧的 QtWebKit 模块，更好的支持 HTML/CSS/JavaScript 特性。
 
-详细列表，请查看 <br>
+modules 详细列表，请查看 <br>
 https://www.riverbankcomputing.com/static/Docs/PyQt5/module_index.html#ref-module-index
 
 ##### 1.4 PyQt 对象树
 * ***QObject*** —— 所有 Qt 对象的基类。
 * ***QPaintDevice*** —— 所有可绘制（painted）对象的基类。
 * ***QApplication*** —— GUI App 入口。
-* ***QMainWindow*** —— 主界面类。
+* ***QMainWindow*** —— 主界面类。(*derived from **QWidget***)
 
 ###### QMainWindow 对象的盒子模型
-<div align="center"><img src="pics/QMainWindow-Box-Model.jpg" width="35%"></div>
+<div align="center"><img src="pics/qmainwindow-box-model.jpg" width="35%"></div>
 
 ##### 1.5 PyQt Signals-Slots 机制
 —— GUI 应用程序与 Console Mode 应用程序的 sequential manner 不同，由事件驱动。
@@ -45,6 +50,9 @@ QtCore.QObject.connect(widget, QtCore.SIGNAL('signalname'), slot_function)
 ```python
 widget.signal.connect(slot_function)
 ```
+
+自定义 Singal 事件驱动 <br>
+https://www.riverbankcomputing.com/static/Docs/PyQt5/signals_slots.html#defining-new-signals-with-pyqtsignal
 
 示例： PyQt 4.8
 ```python
@@ -139,3 +147,17 @@ if __name__=='__main__':
     sys.exit(app.exec_())
 ```
 *Note:* ***QMainWindow*** 和 ***QApplication*** 类在 *QtWidgets* 模块内。
+
+<br>
+
+#### Part 3 —— Qt Style Sheet (QSS) 式样表
+* 选择器(selector)语法
+* 可配置属性(stylable properties)
+
+选择器语法 <br>
+https://doc.qt.io/qt-5.9/stylesheet-syntax.html#selector-types <br>
+可装饰组件列表和装饰属性列表 <br>
+https://doc.qt.io/qt-5/stylesheet-reference.html#list-of-properties <br>
+一些官方示例 <br>
+https://doc.qt.io/qt-5/stylesheet-examples.html
+
