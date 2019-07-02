@@ -34,8 +34,47 @@
 * 列（column），又称字段。
 * 行（row），又常常被称为记录（record）。
 * 主键（primary key），表中每一行都应该有一列（或几列结合）可以唯一标识自己。
-* 外键（foreign key）
-##### 定义主键并不总是被 DBMS 强制要求的，但应该总是定义主键。
+* 外键（foreign key） —— 即，联结（Join）。
+##### 注意，定义主键并不总是被 DBMS 强制要求的，但应该总是定义主键。
+
+外键示例
+```
+db = SQLAlchemy(app)  # SQLAlchemy 示例
+
+class User(db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    name = db.Column(db.String(20), nullable=False)  # 账号
+    pwd = db.Column(db.String(100), nullable=False)  # 密码
+    addtime = db.Column(db.DateTime, nullable=False, index=True, default=datetime.now)  # 注册时间
+    articles = db.relationship('Article', backref='user')  # 文章外键关系关联
+    def __repr__(self):   # 重定义 typeof() 返回字符串 
+        return "<User %r>" % self.name
+    def check_pwd(self, pwd):  # 自定义函数
+        return check_password_hash(self.pwd, pwd)
+
+class Article(db.Model):
+    __tablename__ = "article"
+    id = db.Column(db.Integer, primary_key=True)  # 编号
+    title = db.Column(db.String(255), nullable=False, unique=True)  # 标题
+    cate = db.Column(db.Integer, nullable=False)  # 分类
+    logo = db.Column(db.String(255), nullable=False)  # 封面
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 作者
+    content = db.Column(db.Text, nullable=False)  # 内容
+    addtime = db.Column(db.DateTime, nullable=False, index=True, default=datetime.now)  # 添加时间
+    def __repr__(self):
+        return "<Article %r>" % self.title
+
+if __name__ == "__main__":
+    db.create_all()  # create tables
+    # user = User(  # create a record to test saving
+    #     name="root",
+    #     pwd=generate_password_hash("root"),
+    #     addtime=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # )
+    # db.session.add(user)
+    # db.session.commit()
+```
 
 ##### 主键的特点
 —— 显示声明的，每行的唯一标识
@@ -533,8 +572,8 @@ ORDER BY cust_name, cust_contact;
 
 #### 后记
 ##### 1. 表的描述
-<div align="center"><img src="pics/vendors-table.jpg" width="55%"></div>
-<div align="center"><img src="pics/products-table.jpg" width="55%"></div>
+<div align="center"><img src="pics/vendors-table.jpg" width="45%"></div>
+<div align="center"><img src="pics/products-table.jpg" width="45%"></div>
 
 ##### 2. 表的关系图
-<div align="center"><img src="pics/relationship-graph-of-tables.jpg" width="65%"></div>
+<div align="center"><img src="pics/relationship-graph-of-tables.jpg" width="55%"></div>
