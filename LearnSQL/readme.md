@@ -34,7 +34,7 @@
 * 列（column），又称字段。
 * 行（row），又常常被称为记录（record）。
 * 主键（primary key），表中每一行都应该有一列（或几列结合）可以唯一标识自己。
-* 外键（foreign key） —— 即，联结（Join）。
+* 外键（foreign key） —— 即，联结（Join）。 联结是两个表的公用字段。
 ##### 注意，定义主键并不总是被 DBMS 强制要求的，但应该总是定义主键。
 
 外键示例
@@ -563,10 +563,454 @@ ORDER BY cust_name, cust_contact;
 <br>
 
 #### Part 2 —— 插入 (***INSERT INTO***)
+插入数据的方式：
+* 插入完整的行
+* 插入行的一部分
+* 插入某些查询的结果
+
+##### 14. 插入数据
+* 插入完整的行
+```
+INSERT INTO Customers
+VALUES('1000000006',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA',
+        NULL,
+        NULL);  -- 必须给每一列都提供一个值，如果没有理想值就使用 NULL。
+```
+```
+INSERT INTO Customers(cust_id,
+                      cust_contact,
+                      cust_email,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip)
+VALUES('1000000006',  -- 使用明确给出列名的插入方式才是安全的！
+        NULL,
+        NULL,
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111');
+```
+* 插入部分行 (语法上省略带默认值或允许 NULL 的行，简化代码，因为表单一般有很多选填项。)
+```
+INSERT INTO Customers(cust_id,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country)
+VALUES('1000000006',
+       'Toy Land',
+       '123 Any Street',
+       'New York',
+       'NY',
+       '11111',
+       'USA');
+```
+* 插入检索出的数据
+```
+INSERT INTO Customers(cust_id,
+                      cust_contact,
+                      cust_email,
+                      cust_name,
+                      cust_address,
+                      cust_city,
+                      cust_state,
+                      cust_zip,
+                      cust_country)
+SELECT cust_id,
+       cust_contact,
+       cust_email,
+       cust_name,
+       cust_address,
+       cust_city,
+       cust_state,
+       cust_zip,
+       cust_country
+FROM CustNew;
+```
+* 从一个表复制到另一个表
+```
+SELECT *                  -- DB 语法
+INTO CustCopy
+FROM Customers;  -- 先创建 CustCopy，后将 SELECT 结果插入到 CustCopy。
+CREATE TABLE CustCopy AS  -- MySQL 一列数据库的语法  
+SELECT * FROM Customers;
+```
+###### 小结14
+* ***INSERT INTO table_name(column_name1, column_name2, column_name3) VALUES('字符串1','字符串2',字面值);***
+* ***INSERT INTO table_name(column_name1, column_name2) SELECT column_name1, column_name2 FROM table1 WHERE column_namea = '字符串';***
+* ***CREATE TABLE table_name AS SELECT column_name1, column_name2 FROM table1 WHERE column_namea = '字符串';***
+* ***CREATE TABLE table_name AS*** 后的 SELECT 子句可以是查询部分的任何句法，包括 WHERE、 GROUP BY 和 联结 的使用。 
 
 <br>
 
 #### Part 3 —— 修改 (***UPDATE SET***)、 删除 (***DELETE FROM***)
+更新表中数据的方式：
+* 更新特定行
+* 更新所有行
+
+删除数据的方式：
+* 将某个列设置为 NULL （伪删除）。 **注意，删除列不需要真删除，设置为 NULl 即可！！**
+* 删除特定行
+* 删除所有行
+
+##### 15. 更新和删除数据
+* 更新特定行的一些值
+```
+UPDATE Customers                        -- 表名
+SET cust_email = 'git@thetoystore.com'  -- SET column_name = '字符串' or 字面值
+WHERE cust_id = '1000000005';           -- WHERE 过滤条件以指定特定行. (没有 WHERE 子句将在所有行上更新！！)
+```
+```
+UPDATE Customers
+SET cust_contact = 'Sam Roberts'        -- 更新多个列，用 (,) 分隔。
+    cust_email = 'sam@toyland.com'
+WHERE cust_id = '1000000006';
+```
+* 将某个列设置为 NULL （伪删除）
+```
+UPDATE Customers
+SET cust_email = NULL
+WHERE cust_id = '1000000005';
+```
+* 删除特定行
+```
+DELETE FROM Customers
+WHERE cust_id = '1000000006';  -- (没有 WHERE 子句将在所有行上执行删除！！)
+```
+**如果要删除的行，包含作为外键被其他表引用的列，并且确实已被引用，则不允许删除，并报错。**
+* 更快的删除表中的所有行
+```
+TRUNCATE TABLE table_name;
+```
+###### 小结15
+* ***UPDATE table_name SET column_name1 = '字符串', column_name2 = 字面值 WHERE column_name = '字符串';***
+* ***UPDATE table_name SET column_name = NULL;***
+* ***DELECT FROM table_name WHERE colmn_name = '字符串';***
+* **SQL 没有撤销，请小心使用 UPDATE 和 DELETE。**
+
+<br>
+
+#### Part 4 —— 创建和操纵表
+##### 16. 创建和操纵表
+* 创建表
+```
+CREATE TABLE Products
+(
+    prod_id         CHAR(10)        NOT NULL,
+    vend_id         CHAR(10)        NOT NULL,
+    prod_name       CHAR(254)       NOT NULL,
+    prod_price      DECIMAL(8,2)    NOT NULL      DEFAULT 1,
+    prod_desc       VARCHAR(1000)   NULL
+);
+```
+* 不同 DBMS 间的数据类型兼容性（替换）
+```
+varchar <-> text
+
+DBMS 的数据类型分 4 大类：
+* 字符串大类
+* 数值数据大类
+* 日期时间大类
+* 二进制数据大类
+```
+* 更新表 （对表结构进行改动） —— 主要是增加列
+```
+ALTER TABLE Vendors
+ADD vend_phone CHAR(20);
+```
+* 删除列 —— 不是所有 DMBS 都支持删除列，查文档确认
+```
+ALTER TABLE Vendors
+DROP COLUMN vend_phone;
+```
+* 删除表
+```
+DROP TABLE CustCopy;
+```
+* 给表重命名
+```
+RENAME TABLE old_table TO new_table;  -- MySQL，其他 DBMS 的语法请百度
+```
+###### 小结16
+* ***CREATE TABLE table_name(column_name1 CHAR(10) NOT NULL, column_name2 DECIMAL(8,2) NOT NULL DEFAULT 1, column_name3 VARCHAR(1000) NULL);***
+* ***ALTER TABLE table_name ADD column_name CHAR(100);***
+* ***ALTER TABLE table_name DROP COLUMN column_name;***
+* ***DROP TABLE table_name;***
+* ***RENAME TABLE old_table_name TO new_table_name;***
+
+<br>
+
+#### Part 5 —— 创建用户/创建数据库
+##### Step 1. MySQL Client 交互
+```
+* 打开 MySQL Command Line Client 终端
+\s 打印状态
+\q 退出
+\h 帮助
+```
+##### Step 2. 创建/删除数据库
+```
+* 查看当前所有数据库
+show databases;
+* 创建一个数据库
+CREATE DATABASE 数据库名称
+CREATE DATABASE IF NOT EXISTS 数据库名称 default charset utf8 COLLATE utf8_general_ci;
+* 进入数据库（访问）
+USE 库名;
+* 删除数据库
+DROP DATABASE 数据库名称;
+```
+##### Step 3. 创建/删除用户，以及授权
+```
+* 创建一个用户
+select user,host from mysql.user;
+create user 'username'@'%' identified by 'userpassword';
+* 删除用户
+drop user 'username'@'%';
+* 授权 —— 用户可访问/可修改授权
+grant all on *.* to 'username'@'%'
+flush privileges;  -- 可选则性执行
+```
+##### Step 4. 创建表
+```
+# 创建表单
+CREATE TABLE `users` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `email` varchar(255) COLLATE utf8_bin NOT NULL,
+    `password` varchar(255) COLLATE utf8_bin NOT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin
+AUTO_INCREMENT=1;
+
+# 查看表单信息
+show table status;
+```
+
+<br>
+
+#### Part 6 —— 高级 SQL 功能
+##### 17. 使用视图（View）
+###### 现在，假如可以把整个查询包装成一个名为 ProductCustomers 的虚拟表。 <br> 视图不包含任何真正的行或数据，它只包含一个查询。（因为，查询的结果即是一个子集，何必保存数据呢？！）
+* 创建视图 —— 简化复杂的联结
+```
+CREATE VIEW ProductCustomers AS  -- 创建一个视图
+SELECT cust_name, cust_contact, prod_id  -- 视图对应的查询
+FROM Customers, Orders, OrderItems
+WHERE Customers.cust_id = Orders.cust_id,
+ AND  OrderItems.order_num = Orders.order_num;
+```
+```
+SELECT cust_name, cust_contact  -- 基于视图做查询 (起到简化/封装隐藏作用)
+FROM ProductCustomers
+WHERE prod_id = 'RGAN01';
+```
+* 创建视图 —— 重新格式化检索出的数据
+```
+CREATE VIEW VendorLocations AS
+SELECT RTRIM(vend_name) || '(' || RTRIM(vend_country) || ')'
+       AS vend_title
+FROM Vendors;
+```
+```
+SELECT *
+FROM VendorLocaitons;
+```
+* 创建视图 —— 过滤不想要的数据
+```
+CREATE VIEW CustomerEMailList AS
+SELECT cust_id, cust_name, cust_email
+FROM Customers
+WHERE cust_email IS NOT NULL;
+```
+```
+SELECT *
+FROM CustomerEMailList;
+```
+* 创建视图 —— 添加计算字段
+```
+CREATE VIEW OrderItemsExpanded AS
+SELECT order_num,
+       prod_id,
+       quantity,
+       item_price,
+       quantity*item_price AS expanded_price
+FROM OrderItems;
+```
+```
+SELECT *
+FROM OrderItemsExpanded
+WHERE order_num = 20008;
+```
+###### 小结17
+* ***CREATE VIEW view_name AS SELECT ... FROM ... WHERE ...;***
+
+##### 18. 使用存储过程
+###### 存储过程是为了以后使用而保存的一条或多条 SQL 语句。 可将其视为批文件。
+* 执行存储过程
+```
+EXECUTE AddNewProduct( 'JTS01',
+                       'Stuffed Eiffel Tower',
+                        6.49,
+                       'Plush stuffed toy with the next LaTour Eiffel');
+```
+* 创建存储过程，并直接  —— Oracle 语法
+```
+CREATE PROCEDURE MailingListCount (
+    ListCount OUT INTEGER           -- 形参
+)
+IS
+v_rows INTEGER;                     -- 定义变量
+BEGIN
+    SELECT COUNT(*) INTO v_rows     -- 查询复制
+    FROM Customers
+    WHERE NOT cust_email IS NULL;
+    ListCount := v_rows;            -- 赋值
+END;
+```
+```
+var RetureValue NUMBER
+EXEC MailingListCount(:RetureValue);
+SELECT RetureValue;
+```
+###### 小结18
+* 存储过程可视为批文件，除了用于保存语句为以后使用。 也可以当函数使用。
+
+##### 19. 管理事务处理
+###### 事务处理是一种机制，用来管理**必须成批**执行的 SQL 操作。 用于保证操作的完整性。
+事务处理的术语：
+* transaction （事务） —— 指一组 SQL 语句。
+* rollback (回退) —— 撤销执行。
+* commit (提交) —— 结果写入数据库表。
+* savepoint (保留点) —— 用于指定回退点。
+
+事务处理可以管理 INSERT、UPDATE 和 DELETE，但是不能回退 CREATE 和 DROP。
+
+* 添加事务机制的 SQL 语句
+```
+BEGIN TRANSACTION
+...
+COMMIT TRANSACTION
+```
+* 使用保留点 （相当于游戏里的存档功能）
+```
+SAVE TRANSACTION delete1;  -- 当前的整个状态被存档为 delete1 名称。
+```
+* 还原
+```
+ROLLBACK TRANSACTION delete1;
+```
+
+示例：
+```
+BEGIN TRANSACTION
+INSERT INTO Customers(cust_id, cust_name)
+VALUES('1000000010', 'Toys Emporium');
+SAVE TRANSACTION StartOrder;  -- 存档
+INSERT INTO Orders(order_num, order_date, cust_id)
+VALUES(20100, '2001/12/1', '1000000010');
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;  -- 异常时回滚
+INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price)
+VALUES(20100, 1, 'BR01', 100, 5.49);
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;  -- 异常时回滚
+INSERT INTO OrderItems(order_num, order_item, prod_id, quantity, item_price)
+VALUES(20100, 2, 'BR03', 100, 10.99);
+IF @@ERROR <> 0 ROLLBACK TRANSACTION StartOrder;  -- 异常时回滚
+COMMIT TRANSACTION  -- 真正写入数据库表
+```
+###### 小结19
+* 各种 DBMS 的事务处理实现不同，详细内容请参考具体的文档。
+
+##### 20. 使用游标
+###### 有时，需要在检索出来的行中前进或后退一行或多行，这就是游标的用途所在。
+* 创建游标
+```
+DECLARE CustCursor CURSOR
+FOR
+SELECT * FROM Customers
+WHERE cust_email IS NULL;
+```
+* 使用游标 （打开）
+```
+OPEN CURSOR CustCursor;
+```
+* 使用游标 （访问游标数据）
+```
+FETCH CustCursor;
+```
+* 关闭游标
+```
+CLOSE CustCursor;
+```
+###### 小结20
+* 每种 DBMS 会提供某种形式的游标，详细内容请参阅具体文档。
+
+##### 21. 高级 SQL 特性
+###### 几个高级数据处理特征： 约束、索引 和 触发器。
+* 约束特性 —— 插入或处理数据库数据的规则
+```
+* 主键 (PRIMARY KEY)
+  ◦ 每个表只允许一个主键；
+  ◦ 只有主键可用作外键。
+* 外键 (REFERENCES table_name(column_name))
+  ◦ 外键是保证引用完整性的极其重要部分。
+* 唯一约束 (UNIQUE)
+  ◦ 表可以包含多个唯一约束，但是只允许一个主键；
+  ◦ 唯一约束列可以包含 NULL 值；
+  ◦ 唯一约束列可修改或更新；
+  ◦ 唯一约束列的值可以重复使用； （即其中一列删除后，一个值可以被其他列使用）
+  ◦ 唯一约束不可以用来定义外键。
+* 检查约束 (CHECK column_name > 0)
+  ◦ 利用这个约束，任何插入或更新的行都会被检查。
+```
+* 索引 —— 用来排序数据，以加快搜索和排序操作的速度 （想象一本书后的索引）
+```
+CREATE INDEX prod_name_ind
+ON Products (prod_name);
+```
+* 触发器 —— 特殊的存储过程（批文件），在特定的数据库活动发生时自动执行
+```
+CREATE TRIGGER customer_state
+ON Customers
+FOR INSERT, UPDATE
+AS
+UPDATE Customers
+SET cust_state = Upper(cust_state)
+WHERE Customers.cust_id = inserted.cust_id;
+```
+
+##### 实例： 定义外键
+* 创建表时定义
+```
+CREATE TABLE Orders
+(
+    order_num    INTEGER     NOT NULL    PRIMARY KEY,  -- 主键
+    order_date   DATETIME    NOT NULL,
+    cust_id      CHAR(10)    NOT NULL    REFERENCES Customers(cust_id)  -- 外键
+);
+```
+* 创建表之后定义外键
+```
+ALTER TABLE Orders
+ADD CONSTRAINT
+FOREIGN KEY (cust_id) REFERENCES Customers (cust_id);
+```
+
+<br>
+
+#### Part 7 —— 数据库安全
+**任何安全系统的基础都是用户授权和身份确认。** 这是一种处理操作(基于一种逻辑)（😜）
 
 <br>
 
@@ -577,3 +1021,20 @@ ORDER BY cust_name, cust_contact;
 
 ##### 2. 表的关系图
 <div align="center"><img src="pics/relationship-graph-of-tables.jpg" width="55%"></div>
+
+##### 3. MySQL 与 Redis 的区别
+* mysql 是关系型数据库，主要用于存放持久化数据，将数据存储在硬盘中。 （从磁盘读写）
+* redis 是 NoSQL，即非关系型数据库，也是缓存数据库，数据存储在缓存中。 （从缓存读写）
+* Redis首先把数据保存在内存中，在满足特定条件（默认是 15分钟一次以上，5分钟内10个以上，1分钟内10000个以上的键发生变更）的时候将数据写入到硬盘中，这样既确保了内存中数据的处理速度，又可以通过写入硬盘来保证数据的永久性。
+
+##### 4. 数据库结构的演变
+###### 单击时代
+<div align="center"><img src="pics/single-station-age.png" width="45%"></div>
+
+###### 大数据时代 （不仅读取压力大，写入压力也大）
+<div align="center"><img src="pics/big-data-age.png" width="45%"></div>
+
+###### 后大数据时代 （数据持续猛增，主库的写压力先开始出现瓶颈）
+<div align="center"><img src="pics/post-big-data-age.png" width="45%"></div>
+
+此时，MySQL 开始使用 ***InnoDB*** 引擎提高并发特性，以改善严重的锁问题。
