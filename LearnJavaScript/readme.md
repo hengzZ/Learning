@@ -1,6 +1,6 @@
 # JavaScript Learning Note
-* For basic syntax, please read: [js_notes.md](js_notes.md)
-* **This note contains some advance feature:**
+* 基本语法了解，请查看 basic-concepts.md 文件，或者 https://github.com/hengzZ/peter/tree/master/h5-css-javascript 的内容。
+* 本文档主要记录一些 高级特性的讲解。
 
 
 ## 1. => 函数
@@ -20,9 +20,9 @@ var fn = x => x * x;
 ```
 箭头函数相当于匿名函数，并且简化了函数定义。
 
-##### 箭头函数有两种格式:
-1. 一种像上面的，只包含一个表达式，连 **\{ ... }** 和 **return** 都省略掉了。
-1. 另一种可以包含多条语句，这时候就不能省略 \{ ... } 和 return。
+##### 1.1 箭头函数的两种格式
+* 一种像上面的，只包含一个表达式，连 **\{ ... }** 和 **return** 都省略掉了。
+* 另一种可以包含多条语句，这时候就不能省略 \{ ... } 和 return。
 ```javascript
 x => {
     if (x > 0) {
@@ -34,7 +34,7 @@ x => {
 }
 ```
 
-##### 注意事项：
+##### 1.2 注意事项
 * 如果参数不是一个，就需要用括号 () 括起来：
 ```javascript
 // 一个参数：
@@ -85,9 +85,10 @@ var obj = {
 obj.getAge(2015); // 25
 ```
 
+<br>
 
 ## 2. JavaScript 对象
-#### 构造方法 （Constructor）
+#### 2.1 构造方法 / 构造函数 （Constructor）
 * 方法一：**var**
 ```html
 <html>
@@ -137,7 +138,7 @@ obj.getAge(2015); // 25
 </html>
 ```
 
-#### 成员函数定义 （Methods）
+#### 2.2 成员方法 / 成员函数 （Methods）
 * 定义方式: **this**
 ```html
 <html>
@@ -175,7 +176,7 @@ obj.getAge(2015); // 25
 </html>
 ```
 
-#### 'with' 语法特性
+#### 2.3 'with' 语法特性
 被传递给 with 的对象，将成为后续局部块的默认对象，变量引用时优先被考虑为对象的成员变量：
 ```html
 <html>
@@ -216,14 +217,15 @@ obj.getAge(2015); // 25
 </html>
 ```
 
+<br>
 
-## 3. js中2个等号与3个等号的区别
+## 3. JavaScript 中 2 个等号与 3 个等号的区别
 ###### ==， 两边值类型相同时，等同于===；不同的时候，要先进行类型转换，再比较。 <br>
 ###### ===，不做类型转换，类型不同的一定不等。
 
+<br>
 
-
-## 4. javascript 中的 require、import 和 export.
+## 4. JavaScript 中的 require、import 和 export.
 
 ###### Javascript 不是一种模块化编程语言，在 ES6 以前，它是不支持”类”（class），所以也就没有”模块”（module）。
 
@@ -353,6 +355,72 @@ import {default as a} from './d';
 简单的说，如果 import 的时候，你发现某个变量没有花括号括起来（没有*号），那么你在脑海中应该把它还原成有花括号的 as 语法。
 ```
 
-
-
 ###### reference: https://www.cnblogs.com/libin-1/p/7127481.html
+
+<br>
+
+## 5. JavaScript 中的 .then() 语法
+
+JavaScript Promise 实例 then() 方法
+* 描述 <br>
+  then() 方法用于指定当前实例状态发生改变时的回调函数。 它返回一个新的 Promise 实例。
+* 语法 <br>
+```html
+  Promise.prototype.then(onFulfilled, onRejected);
+  <!-- onFulfilled 参数， 当前实例变成 fulfilled 状态时，该参数作为回调函数被调用。 -->
+  <!-- onRejected 参数， 当前实例变成 reject 状态时，该参数作为回调函数被调用。 -->
+```
+
+##### 5.1 什么是 Promise？
+Promise 是抽象异步处理对象以及对其进行各种操作的组件。 Promise 对象 预设了抽象化异步处理 机制/接口。
+```html
+下面是使用了Promise进行异步处理的一个例子
+----
+var promise = getAsyncPromise("fileA.txt");  // <1> 
+promise.then(function(result){
+    // 获取文件内容成功时的处理
+}).catch(function(error){
+    // 获取文件内容失败时的处理
+});
+----
+<1> 返回 promise 对象
+```
+
+##### 5.2 Promise 构造方法 / 构造函数
+```html
+var promise = new Promise(function(resolve, reject) {
+    // 异步处理
+    // 处理结束后、调用resolve 或 reject
+});
+```
+
+##### 5.3 成员方法 / 成员函数
+then() 是为了 设置 Promise 对象其值在 resolve(成功) / reject(失败) 时调用的回调函数。
+
+注意：
+* 可以只采用 then() 方法，也可以采用 then() + catch() 的方法。
+
+##### 5.4 Promise 对象还拥有一些静态方法
+包括 Promise.all() 还有 Promise.resolve() 等在内，主要都是一些对 Promise 进行操作的辅助方法。
+
+##### 5.5 一个简单实例
+```html
+function asyncFunction() {
+    
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve('Async Hello world');
+        }, 16);
+    });
+}
+
+asyncFunction().then(function (value) {
+    console.log(value);    // => 'Async Hello world'
+}).catch(function (error) {
+    console.log(error);
+});
+```
+
+###### reference
+* http://liubin.org/promises-book/
+* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
