@@ -107,3 +107,106 @@ https://tensorflow.google.cn/overview
 * 可视化 （report）
 * 预测 -> 监督学习
 * 分布图？
+
+<br>
+
+### Scikit-Learn
+—— User Guide, https://scikit-learn.org/stable/user_guide.html
+
+#### 1. 监督学习 (Supervised Learning)
+##### 1.1 Generalized Linear Models (GLM) 广义线性模型
+##### 1.1.1 数据模型 / 基础模型
+<div align="center"><img src="pics/generalized-linear-models.jpg" width="25%"></div>
+
+* 其中， x1 到 xp 可以是独立无关的特征，也可以是有关的特征，比如 xp = x1^2。
+* 因此，可以使用 GLM 求解多项式方程拟合，需要事先计算 x^2, x^3， x^4... 然后带入求参即可。
+
+##### 1.1.2 广义线性模型的引申用法（发展）
+* Ordinary Least Squares 普通最小二乘法
+  <div align="center"><img src="pics/GLM-ordinary-least-squares.jpg" width="10%"></div>
+```bash
+### 模块 - sklearn.linear_model.LinearRegression()
+>>> from sklearn import linear_model
+>>> reg = linear_model.LinearRegression()
+>>> reg.fit([[0, 0], [1, 1], [2, 2]], [0, 1, 2])
+...                                       
+LinearRegression(copy_X=True, fit_intercept=True, n_jobs=None,
+                 normalize=False)
+>>> reg.coef_
+array([0.5, 0.5])
+``` 
+* Ridge Regression 岭回归
+  <div align="center"><img src="pics/GLM-ridge-regression.jpg" width="15%"></div>
+```bash
+### 模块 - sklearn.linear_model.Ridge()
+>>> from sklearn import linear_model
+>>> reg = linear_model.Ridge(alpha=.5)
+>>> reg.fit([[0, 0], [0, 0], [1, 1]], [0, .1, 1]) 
+Ridge(alpha=0.5, copy_X=True, fit_intercept=True, max_iter=None,
+      normalize=False, random_state=None, solver='auto', tol=0.001)
+>>> reg.coef_
+array([0.34545455, 0.34545455])
+>>> reg.intercept_ 
+0.13636...
+```
+* Lasso 拉索回归
+  <div align="center"><img src="pics/GLM-lasso-regression.jpg" width="23%"></div>
+```bash
+### 模块 - sklearn.linear_model.Lasso()
+>>> from sklearn import linear_model
+>>> reg = linear_model.Lasso(alpha=0.1)
+>>> reg.fit([[0, 0], [1, 1]], [0, 1])  
+Lasso(alpha=0.1, copy_X=True, fit_intercept=True, max_iter=1000,
+   normalize=False, positive=False, precompute=False, random_state=None,
+   selection='cyclic', tol=0.0001, warm_start=False)
+>>> reg.predict([[1, 1]])
+array([0.8])
+```
+* Elastic-Net 弹性网络
+  <div align="center"><img src="pics/GLM-elastic-net.jpg" width="29%"></div>
+```bash
+### 模型 - sklearn.linear_model.ElasticNet()
+```
+* Least Angle Regression (LARS) 最小角回归法
+* LARS Lasso (使用 LARS 求解 Lasso)
+* Orthogonal Matching Pursuit (OMP) 正交匹配追踪
+* Bayesian Regression 贝叶斯回归
+  <div align="center"><img src="pics/GLM-bayesian-regression.jpg" width="13%"></div>
+* Automatic Relevance Determination (ARD) 自动相关确定
+* Logistic regression 逻辑斯蒂回归
+  <div align="center"><img src="pics/GLM-logistic-regression.jpg" width="40%"></div>
+* Stochastic Gradient Descent （SGD） 随机梯度下降
+* Perceptron 感知机
+* Passive Aggressive Algorithms （PA） 
+* Robustness regression: outliers and modeling errors
+    * RANSAC: RANdom SAmple Consensus
+    * Theil-Sen estimator: generalized-median-based estimator
+    * Huber Regression
+ 
+ * Polynomial regression: extending linear models with basis functions
+ ```bash
+ ### 模块 - sklearn.preprocessing.PolynomialFeatures
+ # 用于生成多项式模型中的高次项的值。 便于数据生成。 例如：
+ >>> from sklearn.preprocessing import PolynomialFeatures
+>>> import numpy as np
+>>> X = np.arange(6).reshape(3, 2)
+>>> X
+array([[0, 1],
+       [2, 3],
+       [4, 5]])
+>>> poly = PolynomialFeatures(degree=2)
+>>> poly.fit_transform(X)
+array([[ 1.,  0.,  1.,  0.,  0.,  1.],
+       [ 1.,  2.,  3.,  4.,  6.,  9.],
+       [ 1.,  4.,  5., 16., 20., 25.]])
+ ```
+
+##### 1.2 Linear and Quadratic Discriminant Analysis 线性与二次 判别分析
+
+##### 1.3 Kernel ridge regression 核化岭回归
+
+##### 1.4 Support Vector Machines (SVM) 支持向量机
+
+##### 1.5 Stochastic Gradient Descent (SGD) 随机梯度下降
+
+......
