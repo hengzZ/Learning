@@ -102,7 +102,13 @@ class User(object):
                           """
                     cursor.execute(sql, (self.logonTime, self.serviceType, self.contact, self.name))
                     client.commit()
-                # echo user info
+        finally:
+            client.close()
+
+    def _echo(self):
+        client = connect()
+        try:
+            with client.cursor() as cursor:
                 sql = """
                       SELECT * FROM `users` WHERE `name`=%s
                       """
@@ -121,11 +127,13 @@ if __name__ == '__main__':
     contact = 'account1@password1@localhost'
     user = User('test', '18800201234', logonTime, serviceType, contact)
     user.commit()
+    user._echo()
 
     serviceType = 'service2'
     contact = 'account2@password2@localhost'
     user = User('test', '18800201234', logonTime, serviceType, contact)
     user.commit()
+    user._echo()
 
     User.fetch_info(id=1)
 
