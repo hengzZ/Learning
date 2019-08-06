@@ -102,3 +102,10 @@ gem install minima # 如果需要， -p https://proxy-url:port 添加代理
 * 模板对于 web 页面相当于 PPT 的主题。
 * 模板定义了页面的布局和式样，内容只不过是式样上覆盖（悬浮）的文字/图片。
 * 模板使主题更换更容易。
+
+##### 2. 其他替代方案
+* **WordPress** — 基于 PHP， https://cn.wordpress.org/
+* **hexo** — 基于 Node.js， https://hexo.io/
+
+说明
+* 三种项目的思路相似，不同点在于： 文本格式支持、模板语言语法和项目组织方式。
