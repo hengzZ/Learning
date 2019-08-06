@@ -1,11 +1,11 @@
-# PHP Quick Start
-快速理解、感受 PHP 脚本语言:
+## PHP Quick Start
 
-PHP 是服务器端脚本语言。 <br>
+##### 快速理解、感受 PHP 脚本语言
+PHP 是服务器端脚本语言。 （引申义即 web 导向） <br>
 用途：创建动态交互性站点（网站）. <br>
 特点：
-* PHP 文件可包含文本、HTML、JavaScript代码和 PHP 代码
-* <font color="#CC0000">**PHP 代码在服务器上执行，结果以纯 HTML 形式返回给浏览器**</font>
+* PHP 文件可包含 文本、HTML、JavaScript代码 和 PHP 代码
+* **PHP 代码在服务器上执行，结果以纯 HTML 形式返回给浏览器**
 * PHP 文件的默认文件扩展名是 ".php"
 
 例子：
@@ -20,6 +20,22 @@ echo "Hello World!";
 
 </body> 
 </html>
+```
+注意，php 开发的网站一般都是以 php 作为 url 的结尾。
+* html 文本内可以包含 php 代码，就像包含 javascript 代码一样。
+* php 文件可以包含 html 能包含的所有内容。。
+
+#### 介绍
+##### 1. php 的初衷
+创建动态内容（与数据库交互）。
+##### 2. 为了开发和运行 php web 页面，需要首先安装三大环境
+* Web Server
+* Database
+* PHP Parser
+
+进行开发前，首先访问以下 url 测试 php 环境
+```html
+http://127.0.0.1/info.php
 ```
 
 ## PHP 能做什么？
