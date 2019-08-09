@@ -22,8 +22,18 @@ def export(X, Y, coef, intercept):
         csv_writer.writerow(intercept)
 
 
-X = np.arange(6).reshape(2, 3)
-Y = np.arange(2).reshape(2, 1)
+#X = np.arange(6).reshape(2, 3)
+#Y = np.arange(2).reshape(2, 1)
+X = np.array(np.mat(
+    """
+    1 2 3;
+    4 5 6
+    """))
+Y = np.array(np.mat(
+    """
+    1;
+    2
+    """))
 
 
 if __name__ == '__main__':
