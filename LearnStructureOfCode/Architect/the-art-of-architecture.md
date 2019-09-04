@@ -770,7 +770,7 @@ BPL 语言主要用于分析二进制数据格式。 应用场景包括：文件
 
 #### 13. 进程内协同：同步、互斥与通讯
 进程内的执行体有两类： 用户态的协程（以 Go 语言的 goroutine 为代表）、操作系统的线程。
-<div align="center"><img src="pics/in-process-collaboration.jpg" width=""></div>
+<div align="center"><img src="pics/in-process-collaboration.jpg" width="45%"></div>
 
 ##### 13.1 原子操作
 需要注意的是，原子操作是 CPU 提供的能力，与操作系统无关。
