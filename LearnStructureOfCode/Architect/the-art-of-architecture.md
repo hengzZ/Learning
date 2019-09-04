@@ -767,3 +767,186 @@ BPL 语言主要用于分析二进制数据格式。 应用场景包括：文件
 多任务的需求非常复杂。 人们不只发明了三套执行体：进程、线程和协程，还发明了各种五花八门的执行体间的通讯机制。
 
 操作系统内核之中，不乏无数精妙的设计思想。但是，前辈们也并非圣贤，也可能会出现一些决策上失误，留下了诸多后遗症。
+
+#### 13. 进程内协同：同步、互斥与通讯
+进程内的执行体有两类： 用户态的协程（以 Go 语言的 goroutine 为代表）、操作系统的线程。
+<div align="center"><img src="pics/in-process-collaboration.jpg" width=""></div>
+
+##### 13.1 原子操作
+需要注意的是，原子操作是 CPU 提供的能力，与操作系统无关。
+
+##### 13.2 执行体的互斥
+互斥体也叫锁。锁用于多个执行体之间的互斥访问，避免多个执行体同时操作一组数据产生竞争。
+
+###### 锁的使用范式比较简单：在操作需要互斥的数据前，先调用 Lock，操作完成后就调用 Unlock。 (但总是存在一些不求甚解的人，对锁存在各种误解。)
+
+##### 误区： “锁慢，channel 快” 这种错觉
+锁的确会导致代码串行执行，所以在某段代码并发度非常高的情况下，串行执行的确会导致性能的显著降低。
+但平心而论，相比其他的进程内通讯的原语来说，锁并不慢。
+* 从进程内通讯来说，比锁快的东西，只有原子操作。
+
+##### 那么锁的问题在哪里？
+锁的最大问题在于不容易控制。锁 Lock 了但是忘记 Unlock 后是灾难性的，相当于服务器挂了。
+
+案例：
+```c++
+mutex.Lock()
+doSth()
+mutex.Unlock()
+```
+这段代码是不安全的! 如果 doSth 抛出了异常，那么服务器就会出现问题。
+
+为此 Go 语言还专门发明了一个 defer 语法来保证配对:
+```c++
+mutex.Lock()
+defer mutex.Unlock()
+doSth()
+```
+
+如果语言不支持 defer，而是支持 try … catch，那么代码可能是这样的：
+```c++
+mutex.Lock()
+try { 
+    doSth()
+} catch (e Exception) {
+    mutex.Unlock()
+    throw e
+}
+mutex.Unlock()
+```
+
+另外，锁不容易控制的另一个表现是锁粒度的问题。
+
+案例： 如果 doSth 函数里面调用了网络 IO 请求，而网络 IO 请求在少数特殊情况下可能会出现慢请求，要好几秒才返回。 此时，这几秒对服务器来说就好像挂了。
+
+###### 请牢记箴言： 不要在锁里面执行费时操作。
+
+##### 锁的最佳编程实践
+如果明确一组数据的并发访问符合 “绝大部分情况下是读操作，少量情况有写操作”，这种 “读多写少” 特征，那么应该用读写锁。
+注意！ 读写锁分为读操作和写操作两种，对应调用不同的互斥操作。
+```
+读操作不阻止读操作，阻止写操作；
+写操作阻止一切，不管读操作还是写操作。
+```
+由此，
+* 请只在明确的 “读多写少” 特征下，使用锁特性。
+* 其余情况，还是考虑别的不易出错的特性吧。
+
+##### 13.3 执行体的同步
+所谓同步，即把一个大任务分解为 n 个小任务，分配给 n 个执行体并行去做，等待它们一起做完。 (同步机制我们叫 “等待组”)
+
+条件变量（Condition Variable）是一个更通用的同步原语，设计精巧又极为强大。
+##### 怎么用条件变量？
+条件变量初始化的时候需要传入一个互斥体，它可以是普通锁（Mutex)，也可以是读写锁（RWMutex）。
+```go
+var mutex sync.Mutex // 也可以是 sync.RWMutex
+var cond = sync.NewCond(&mutex)
+```
+
+为什么传入锁？因为 cond.Wait() 的需要。 Wait 的内部逻辑：
+```go
+把自己加入到挂起队列
+mutex.Unlock()
+等待被唤醒 // 挂起的执行体会被后续的 cond.Broadcast 或 cond.Signal() 唤醒
+mutex.Lock()
+```
+
+条件变量的用法有一个标准化的模板：
+```go
+mutex.Lock()
+defer mutex.Unlock()
+for conditionNotMetToDo {
+    cond.Wait()
+}
+doSomething
+if conditionNeedNotify {
+    cond.Broadcast()
+    // 有时可以优化为 cond.Signal()
+}
+```
+一个小细节，
+* 注意用的是 for 循环，而不是 if 语句。 因为 cond.Wait() 得到了执行权后不代表我们想做的事情就一定能够干了，要再重新判断一次。
+* cond.Broadcast 比较粗暴，它唤醒了所有在这个条件变量挂起的执行体，而 cond.Signal 则只唤醒其中的一个。
+
+案例： 使用条件变量，实现一个 Go 语言的 channel。 （具有同步和互斥机制的队列）
+```go
+type Channel struct {
+    mutex sync.Mutex  // 锁
+    cond *sync.Cond   // 条件变量
+    queue *Queue      // 队列
+    n int             // 队列长度
+}
+
+func NewChannel(n int) *Channel {
+    if n < 1 {
+        panic("todo: support unbuffered channel")
+    }
+    c := new(Channel)
+    c.cond = sync.NewCond(&c.mutex)
+    c.queue = NewQueue()
+    // 这里 NewQueue 得到一个普通的队列
+    // 代码从略
+    c.n = n
+    return c
+}
+
+func (c *Channel) Push(v interface{}) {
+    c.mutex.Lock()
+    defer c.mutex.Unlock()
+    for c.queue.Len() == c.n { // 等待队列不满
+        c.cond.Wait()
+    }
+    if c.queue.Len() == 0 { // 原来队列是空的，可能有人等待数据，通知它们
+        c.cond.Broadcast()
+    }
+    c.queue.Push(v)
+}
+
+func (c *Channel) Pop() (v interface{}) {
+    c.mutex.Lock()
+    defer c.mutex.Unlock()
+    for c.queue.Len() == 0 { // 等待队列不空
+        c.cond.Wait()
+    }
+    if c.queue.Len() == c.n { // 原来队列是满的，可能有人等着写数据，通知它们
+        c.cond.Broadcast()
+    }
+    return c.queue.Pop()
+}
+
+func (c *Channel) TryPop() (v interface{}, ok bool) {
+    c.mutex.Lock()
+    defer c.mutex.Unlock()
+    if c.queue.Len() == 0 { // 如果队列为空，直接返回
+        return
+    }
+    if c.queue.Len() == c.n { // 原来队列是满的，可能有人等着写数据，通知它们
+        c.cond.Broadcast()
+    }
+    return c.queue.Pop(), true
+}
+
+func (c *Channel) TryPush(v interface{}) (ok bool) {
+    c.mutex.Lock()
+    defer c.mutex.Unlock()
+    if c.queue.Len() == c.n { // 如果队列满，直接返回
+        return
+    }
+    if c.queue.Len() == 0 { // 原来队列是空的，可能有人等待数据，通知它们
+        c.cond.Broadcast()
+    }
+    c.queue.Push(v)
+    return true
+}
+```
+
+##### 13.4 执行体的通讯
+—— 怎么在执行体间收发消息。
+* 管道是大家都很熟知的执行体间的通讯机制。
+
+用法上，先得到管道的写入端和读出端，分别传给两个并行执行的执行体。 (注意，管道是单向的，如果是双向则需要两个管道。)
+
+##### 13.5 总结
+执行体间的协同机制： 原子操作、同步、互斥、通讯。
+* 锁在一些人心中是有误解的，但实际上锁在服务端编程中的比重并不低，需要特别重视和花费精力。
+* 条件变量是最复杂的同步原语，功能强大。 但，直接使用条件变量的机会不是太多，早已被封装在更高阶的原语中。
