@@ -349,3 +349,59 @@ PWA 开始于 2015 年，比微信小程序早很多，并得到了苹果和微�
 
 ##### 怎么看待 PWA 的未来？
 PWA 相比小程序来说太传统。 小程序符合现代操作系统的 “账号 (Account)- 支付 (Pay)- 应用市场 (AppStore)” 的商业闭环，但是 PWA 并没有账号，也没有支付。
+
+#### 25. 跨平台与 Web 开发的建议
+
+##### 25.1 跨平台桌面程序开发
+跨平台的桌面程序开发是一个超级难题。无数人前仆后继，但至今为止，仍然没有称得上真正深入人心的解决方案。
+
+原因如下，
+* 操作系统。 不同的操作系统抽象的界面程序框架并不一致。
+* 屏幕尺寸。 即使相同的操作系统，在不同尺寸的屏幕上，交互的范式也会存在很大的差异性。
+
+放弃某个操作系统，就意味着放弃某个流量入口，也就意味着放弃这些用户。。。
+
+##### 目前主流的跨平台方案
+<div align="center"><img src="pics/solutions-for-cross-platform.jpg" width="40%"></div>
+
+目前来说，还很难说哪个方案会胜出。
+
+###### 总之： “每一次统一的努力，都最终变成新的分裂”。
+
+##### 25.2 Web 开发
+Web 的 B/S 架构意味着编写软件有了更高的复杂性。 表现如下，
+* 多用户。 用户的数据不再是保存在 Client（Browser）端，而是存储在 Server 端。
+* 更高的数据可靠性要求。 数据在 Client 端，客户自己对数据的可靠性负责。数据在 Server 端，服务提供方对数据的可靠性负责。
+* 更多可能的分工安排。 分为两大流派：胖前端与胖后端。
+
+##### MVC 框架在浏览器下的样子
+界面的局部更新是一个复杂的话题，浏览器通过引入 HTML+CSS 这样的 ViewModel 层把它解决了。
+
+现在，MVC 模式变成了 MVMP 模式，全称为 “Model-ViewModel-Presenter”。
+<div align="center"><img src="pics/mvmp-pattern-of-browser.png" width="45%"></div>
+
+* 事件响应过程。 浏览器的 View 收到用户的交互事件，它把事件委托给 ViewModel 层，并且通过 HTML DOM 暴露出来。
+* Model 层的数据变化（DataChanged）事件。 Presenter 层更新界面（Update View）并不是操作 View，而是 ViewModel。
+
+##### Server 端的架构
+<div align="center"><img src="pics/architecture-of-web-server.jpg" width="45%"></div>
+
+到了 Web 开发，同样需要二次开发接口，只是，二次开发接口不再是在 Client 端完成，而是在 Server 端完成。
+###### Server 端支持直接的 API 调用（Web API），以支持自动化（Automation）方面的需求。
+
+注意，
+* Web 层和 Model 层的假设不同，Web 层是基于会话的（Session-based），因为它负责用户的接入，每个用户登录后，会形成一个个会话（Session）。
+* 在服务端，Session-based Model 和 Session-based ViewModel 并不发生直接关联，它们通过浏览器这一侧的 Model 和 ViewModel，响应用户的交互。
+
+##### Session-based Model 是什么样的呢？
+其实是 Multi-User Model 层的转译。把多租户的 API 转译成单租户的场景。
+
+##### Session-based ViewModel
+是一些 HTML+JavaScript+CSS 文件。它是真正的 Web 业务入口，通过互联网把自己的数据返回给浏览器，浏览器基于 ViewModel 渲染出 View。
+
+##### 25.3 总结
+从跨平台来说，这是桌面程序员（也叫“大前端”）永远的痛。
+###### 计划赶不上变化，用来形容大前端程序员面临的窘境是一点都不过分的。
+
+从 Web 开发来说，MVC 变成了 MVMP（Model-ViewModel-Presenter）。
+###### MVMP 依旧需要认真对待 Model 层，认真思考它的使用接口是什么样的，把 Model 层做厚。
