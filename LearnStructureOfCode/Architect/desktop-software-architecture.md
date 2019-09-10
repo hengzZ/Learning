@@ -427,3 +427,503 @@ Web 的 B/S 架构意味着编写软件有了更高的复杂性。 表现如下�
 ##### 26.2 编程能力的未来
 从终局的视角来看，桌面开发的终极目标，是让儿童可以轻松编写出生产级的应用。
 这个目标与儿童编程教育相向而行，有一天必然汇聚于一点上。
+
+#### 27. 实战（一）： 怎么设计一个“画图”程序？
+一个 B/S 结构的 Web 程序，基本上分下面几块内容：
+* Model 层： 一个多用户（Multi-User）的 Model 层，和单租户的 Session-based Model。 从服务端来说，Session-based Model 是一个很简单的转译层。从浏览器端来说，Session-based Model 是一个完整的单租户 DOM 模型。
+* View 层： 实际是 ViewModel 层。ViewModel 只有 View 层的数据和可被委托的事件。
+* Controller 层： 切记不要让 Controller 之间相互知道对方，更不要让 View 知道某个具体的 Controller 存在。
+
+##### 27.1 Model 层 —— 浏览器端的 Model 层
+```javascript
+class QLineStyle {
+properties:
+  width: number
+  color: string
+methods:
+  constructor(width: number, color: string)
+}
+
+class QLine {
+properties:
+  pt1, pt2: Points
+  lineStyle: QLineStyle
+methods:
+  constructor(pt1, pt2: Point, lineStyle: QLineStyle)
+  onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+class QRect {
+properties:
+  x, y, width, height: number
+  lineStyle: QLineStyle
+methods:
+   constructor(r: Rect, lineStyle: QLineStyle)
+   onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+class QEllipse {
+properties:
+  x, y, radiusX, radiusY: number
+  lineStyle: QLineStyle
+methods:
+   constructor(x, y, radiusX, radiusY: number, lineStyle: QLineStyle)
+   onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+class QPath {
+properties:
+  points: []Point
+  close: bool
+  lineStyle: QLineStyle
+methods:
+   constructor(points: []Point, close: bool, lineStyle: QLineStyle)
+   onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+interface Shape {
+  onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+class QPaintDoc {
+methods:
+  addShape(shape: Shape): void
+  onpaint(ctx: CanvasRenderingContext2D): void
+}
+```
+目前这个 DOM 还是单机版本的，没有和服务端的 Session-based Model 连起来。
+
+这个 Model 层的使用非常容易理解，也非常直观体现了业务。 主要支持的能力有以下两个：
+* 添加图形（Shape）
+* 绘制（onpaint）
+
+##### 27.2 ViewModel 层 —— 浏览器端的 ViewModel 层
+index.htm 文件和一个 view.js 文件。
+
+index.htm 是总控文件，主要包含两个内容：
+* 界面布局（Layout）
+* 应用初始化（InitApplication），比如加载哪些 Controllers。
+
+view.js 是 ViewModel 层的核心，代码如下，
+```javascript
+interface Controller {
+  stop(): void
+  onpaint(ctx: CanvasRenderingContext2D): void
+}
+
+class QPaintView {
+properties:
+  doc: QPaintDoc
+  properties: {
+    lineWidth: number
+    lineColor: string
+  }
+  drawing: DOMElement
+  controllers: map[string]Controller
+methods:
+  get currentKey: string
+  get lineStyle: QLineStyle
+  onpaint(ctx: CanvasRenderingContext2D): void
+  invalidateRect(rect: Rect): void
+  registerController(name: string, controller: Controller): void
+  invokeController(name: string): void
+  stopController(): void
+  getMousePos(event: DOMEvent): Point
+events:
+  onmousedown: (event: DOMEvent):void
+  onmousemove: (event: DOMEvent):void
+  onmouseup: (event: DOMEvent):void
+  ondblclick: (event: DOMEvent):void
+  onkeydown: (event: DOMEvent):void
+}
+
+var qview = new QPaintView()
+```
+QPaintView 的内容有点多，
+* 但和 Model 层相关的，就只有 doc: QPaintDoc 这个成员。有了它就可以操作 Model 层了。
+* 属于 ViewModel 层自身的，数据上只有 properties 和 drawing。关于绘制的有 onpaint 和 invalidRect。
+* 剩下来的就是 Controller 相关的了，
+    * registerController，invokeController，stopController，View 层并不关心具体的 Controller 类型。
+    * 事件委托（delegate）。
+    * getMousePos 只是一个辅助方法，用来获取鼠标事件中的鼠标位置。
+
+###### View 层在 MVC 里面是承上启下的桥梁作用。 View 层的边界设定非常关键。
+
+平台兼容性问题，
+* 屏蔽平台的差异。 Model 层很容易做到平台无关，Controller 层除了有少量的界面需要处理平台差异外，大部分代码都是响应事件处理业务逻辑。 另外，只要 View 对事件的抽象得当，也是跨平台的。
+* 定义界面布局。 针对不同尺寸的设备，在 View 层来控制不同设备的整体界面布局比较妥当。
+
+##### 27.3 Controller 层 —— 浏览器端的 Controller 层
+* Menu, PropSelectors, MousePosTracker： accel/menu.js
+* Create Path：creator/path.js
+* Create FreePath：creator/freepath.js
+* Create Line, Rect, Ellipse,Circle： creator/rect.js
+
+一些 Controller 因为实现相近被合并到一个文件。
+
+##### 27.4 总结
+架构设计的第一步是需求分析，第二步则是：概要设计（也可以叫系统设计）。 该阶段的核心是分解子系统，MVC 是一个分解子系统的基本框架，它对于桌面程序尤为适用。
+
+#### 28. 实战（二）： 怎么设计一个“画图”程序？
+—— 上节内容的复盘和一次需求的迭代。
+
+##### 28.1 MVP 版画图程序
+—— 只能增加新图形，没法删除，也没法修改。
+
+Model 和 View、Controllers 的耦合关系如下：
+<div align="center"><img src="pics/coupling-between-mvp-in-drawing-app.png" width="45%"></div>
+
+View 层的内容：
+<div align="center"><img src="pics/view-layer-in-drawing-app.png" width="45%"></div>
+
+Controller 位于 MVC 的最上层，因此，对它的关注点就不再是它的规格本身，因为没人去调用它的方法。
+所以，把关注点放在了每个 Controller 都怎么用 Model 和 View。
+<div align="center"><img src="pics/controller-layer-in-drawing-app.png" width="45%"></div>
+
+通过以上三张表对照分析，可以清晰看出 Model、View、Controllers 是怎么关联起来的。
+
+##### 28.2 改进版的画图程序
+功能改进如下，
+* 选择一个图形，允许删除、移动或者对其样式进行修改。
+* 图形样式增加 fillColor（填充色）。
+* 更加现代的交互范式： 默认处于 ShapeSelector 状态，创建完图形后自动回到此状态。
+* 选择图形后，界面上的当前样式自动更新为被选图形的样式。
+
+新的 Model 层
+<div align="center"><img src="pics/model-layer-in-drawing-app-after-1st-iteration.png" width="45%"></div>
+
+注意，QLineStyle 改名为 QShapeStyle，且其属性 width、color 被改名为 lineWidth、lineColor。这相当于一次小重构。
+###### 重构关键是要及时处理，把控质量。 为了保证质量仍然可控，最好辅以足够多的单元测试。
+
+##### 此处的小重构引发的思考
+最初设计 new QLine、QRect、QEllipse、QPath 的时候，传入的最后一个参数是 QLineStyle，从设计上这是一次失误，把最后一个参数改为 QShapeStyle，这从设计上就完备了。
+由此，图形样式就算有更多的演进，也会集中到 QShapeStyle 这一个类上。
+
+如果作为一个实实在在要去迭代的画图程序来说，上面这个 QShapeStyle 必然还会面临一次重构。变成如下这个样子：
+```javascript
+class QLineStyle {
+  width: number
+  color: string  
+}
+
+class QFillStyle {
+  color: string  
+}
+
+class QShapeStyle {
+  line: any
+  fill: any
+}
+```
+
+新的 View 层
+<div align="center"><img src="pics/view-layer-in-drawing-app-after-1st-iteration.png" width="45%"></div>
+
+新的 Controller 层
+<div align="center"><img src="pics/controller-layer-in-drawing-app-after-1st-iteration.png" width="45%"></div>
+
+#### 29. 实战（三）： 怎么设计一个“画图”程序？
+—— 怎么和服务端连接。 （第一，浏览器端进行持久化）
+
+##### 为什么需要在浏览器端进行持久化？
+因为我们需要有更好的用户体验。在用户断网的情况下，这个画图程序还可以正常编辑，并且在恢复联网的情况下，能够把所有离线编辑的内容自动同步到服务端。
+
+##### 29.1 基于传统的 localStorage 技术进行持久化
+###### 最核心的变化是 Model 层。
+
+##### 对象 ID
+为了支持持久化，为每一个 Model 层 DOM 树的根 —— QPaintDoc 类引入了两个 ID，
+* localID: string
+* displayID: string
+
+其中，displayID 前面带 t 开头，表示这篇文档从它被创建开始，从未与服务器同步过，是一篇临时的文档。
+
+一旦它完成与服务端的同步后，就会改用服务端返回的文档 ID。
+
+那么，localID 又是什么？
+* localID 是这篇文档的本地 ID。 在文档还没有和服务端同步时，如果 displayID 是 t10001，则 localID 就是 10001。
+* 但是，文档第一次保存到服务端后，它的 displayID 会变化，而 localID 则并不...
+
+为了支持更新数据的粒度不是整个文档每次都保存一遍，存储分成 shape、document 两个级别。
+###### 当 Shape 发生变化，比如修改图形式样、或移动时，shapeID 发生变化并对应一个新的 shapeJsonData，此时，它由 QPaintDoc.localID + “:” + shape.id 指示。
+
+如果文档只有一个 ID，那么这个 ID 在同步前后发生变化，shapeJsonData 对应的完整 ID 索引也要跟着变化。。
+
+##### 数据变更
+我们把数据变更分为了两级，
+* shapeChanged
+* documentChanged
+
+##### 存储的容量限制与安全
+localStorage 的存储容量是有限制的，不同的浏览器并不一样，大部分在 5-10M 这个级别。
+* 我们需要考虑数据清理的机制。淘汰掉最远创建的一篇文档。
+* 安全问题。 解决这个问题最简单的方法是在用户帐号登出的时候，清空所有的 localStorage 中的文档。
+
+#### 30. 实战（四）： 怎么设计一个“画图”程序？
+—— 怎么和服务端连接。 （第二，考虑服务端）
+
+##### 30.1 第一步，要考虑的是网络协议。（Web API）
+暂时不考虑多租户带授权的场景。
+
+在浏览器中，一个浏览器的页面编辑的是一个文档，不同页面编辑不同的文档。
+
+但是，很显然，服务端和浏览器端这一点是不同的。如此服务端的功能基本上是以下这些：
+* 创建新 drawing 文档；
+* 获取 drawing 文档；
+* 删除 drawing 文档；
+* 在 drawing 文档中创建一个新 shape；
+* 取 drawing 文档中的一个 shape；
+* 修改 drawing 文档中的一个 shape，包括移动位置、修改图形样式；
+* 修改 drawing 文档中的一个 shape 的 zorder 次序（浏览器端未实现）；
+* 删除 drawing 文档的一个 shape。
+
+完整的网络协议：
+<div align="center"><img src="pics/network-protocol-of-drawing-app.png" width="45%"></div>
+
+整体来说，这套网络协议比较直白体现了其对应的功能含义。 该协议遵循的范式如下：
+* 创建对象：POST /objects
+* 修改对象：POST /objects/\<ObjectID>
+* 删除对象：DELETE /objects/\<ObjectID>
+* 查询对象：GET /objects/\<ObjectID>
+
+还有一个列出对象的功能，只不过这里没有用到，
+* 列出所有对象：GET /objects
+* 列出符合条件的对象：GET /objects?key=value
+
+##### 30.2 在网络设计时需要特别注意的点
+**对重试的友好性。** (你以为只是重试，实际上是同一个操作执行了两遍。)
+###### 所谓重试的友好性，是指同一个操作执行两遍，其执行结果和只执行一遍一致。
+
+为什么我们必须要充分考虑重试的友好性？
+* 因为网络是不稳定的。 这意味着，在发生一次网络请求失败时，在一些场景下你不一定能确定请求的真实状态。
+* 在小概率的情况下，有可能服务端已经执行了预期的操作，只不过返还给客户端的时候网络出现了问题。
+
+只读操作，比如查询对象或列出对象，毫无疑问显然是重试友好的。
+
+创建对象（POST /objects）往往容易被实现为重试不友好，对比以下代码：
+```javascript
+POST /drawings  # 创建新 drawing
+
+POST /drawings/<DrawingID>/shapes  # 创建新 shape
+Content-Type: application/json
+
+{
+    "id": <ShapeID>,
+    <Shape>
+}
+```
+分析，
+* 创建新 shape 时传入了 ShapeID，如果上一次服务端已经执行过该对象的创建，可以返回对象已经存在的错误。
+* 创建新 drawing 并没有传入什么参数，重复调用不会发生什么冲突，并创建两个新 drawing。
+
+##### 那么怎么解决这个问题？有这么几种可能：
+* 客户端传 id（和上面创建新 shape 一样）；
+* 客户端传 name；
+* 客户端传 uuid。
+
+当然这三种方式本质上的差别并不大。传 uuid 可以认为是一种常规重试友好的改造手法。
+（uuid 可以是内容中的一个唯一序列号，也可以是网络请求的唯一序列号。两种选一即可，但后者更通用。）
+```javascript
+POST /drawings
+Content-Type: application/json
+
+{
+    "uuid": <DrawingUUID>
+}
+或者
+POST /drawings
+Content-Type: application/json
+X-Req-Uuid: <RequestUUID>
+```
+用请求序列号是有额外代价的，这意味着服务端要把最近执行成功的所有的请求序列号（RequestUUID）记录下来。。
+
+##### 在网络协议的设计上，还有一个业务相关的细节值得一提：
+请留意，Shape 的 json 表示，在网络协议和 localStorage 存储的格式并不同。
+
+原因，
+* 从结构化数据的 Schema 设计角度，localStorage 中的实现是无 Schema 模式，过于随意。
+* 网络协议未来有可能作为业务的开放 API ，需要严谨对待！！
+
+##### 30.3 版本升级
+一些需要考虑的长远问题：
+* 网络协议的版本管理问题；
+* 网络协议是一组开放 API 接口，一旦放出去了就很难收回，需要考虑协议的兼容。
+
+为了便于未来协议升级的边界，很多网络协议都会带上版本号。比如：
+```html
+POST /v1/objects
+POST /v1/objects/<ObjectID>
+DELETE /v1/objects/<ObjectID>
+GET /v1/objects/<ObjectID>
+GET /v1/objects?key=value
+```
+###### 在协议发生了不兼容的变更时，我们会倾向于升级版本，比如升为 v2 版本：
+```html
+POST /v2/objects
+POST /v2/objects/<ObjectID>
+DELETE /v2/objects/<ObjectID>
+GET /v2/objects/<ObjectID>
+GET /v2/objects?key=value
+```
+这么做有以下好处，
+* 可以逐步下线旧版本的流量，一段时间内让两个版本的协议并存；
+* 可以新老版本的业务服务器相互独立，前端由 nginx 或其他的应用网关来分派。
+
+##### 30.4 第一个实现版本
+##### 第一个实现版本怎么做？
+* 方式 1 —— 常规的憋大招模式。 直接做业务架构设计、架构评审、编码、测试，并最后上线。
+* 方式 2 —— 做一个 Mock 版本的服务端程序。
+
+##### 两者有什么区别？
+区别在于，
+* 服务端程序从架构设计角度看，就算是非业务相关的通用型问题也是很多的，例如：
+    * 高可靠 —— 高可靠是指数据不能丢。就算服务器的硬盘坏了，数据也不能丢。
+    * 高可用 —— 高可用是指服务不能存在单点故障。任何一台甚至几台服务器停机了，用户还要能够正常访问。
+
+在没有好的基础设施下，做好一个好的服务端程序并不那么容易。 因此，还是先做一个 Mock 版本的服务端程序。
+
+这不是增加了工作量？有什么意义？
+* 不同团队协作的基础是网络协议。一个快速被打造的 Mock 的最小化版本服务端，可以让前端不用等待后端。而后端则可以非常便捷地自主针对网络协议进行单元测试，做很高的测试覆盖率以保证质量。（前端组+测试组）
+* 让业务逻辑最快被串联，快速验证网络协议的有效性。中途如果发现网络协议不满足业务需求，可以及时调整过来。（有效性测试）
+
+所以，第一个版本一定是 Mock 的版本。Mock 版本不必考虑太多服务端领域的问题，它的核心价值就是串联业务。
+###### 所以 Mock 版本的服务器甚至不需要依赖数据库，直接所有的业务逻辑基于内存中的数据结构就行。
+
+##### 第一个版本的服务端程序 paintdom （Mock 版本）
+从架构角度来说，这个 paintdom 程序分为两层：Model 层和 Controller 层。
+
+* Model 层与网络无关，有的只是纯纯粹粹的业务核心逻辑。 它实现了一个多文档版本的画图程序，逻辑结构也是一棵 DOM 树，只不过比浏览器端多了一层。（Document => Drawing => Shape => ShapeStyle）
+* Controller 层实现的是网络协议。 为什么会把网络协议层看作 Controller 层？MVC 中 View 层去了哪里？
+
+首先，服务端程序大部分情况下并不需要显示模块，所以不存在 View 层。 其次，网络协议层为什么可以看作 Controller 层，是因为它负责接受用户输入。
+###### 服务端的用户输入不是我们日常理解的用户交互，而是来自某个自动化控制（Automation）程序的 API 请求。
+
+##### 30.5 再谈网络协议的重要性
+网络协议的地位非常关键，它是一个 B/S 或 C/S 程序前后端耦合的使用界面，因而也是影响团队开发效率的关键点。
+
+#### 31. 实战（五）： 怎么设计一个“画图”程序？
+—— 前后端对接 + 总结
+
+##### 31.1 宏观的系统架构
+现在，我们有了 paintdom 和 paintweb 两大软件。 paintdom 监听的地址是 localhost:9999，而 paintweb 监听的地址是 localhost:8888。
+
+应当注意，在实际业务中它们是不同的软件。 paintdom 和 paintweb 之间相互协作的基础，是它们之间所采用的网络协议。
+
+##### 网络协议的两个层面的意思：
+* 其一，就是我们网络协议的载体，也就是协议栈。（我们这里采纳的是 HTTP 协议，而 HTTP 协议又基于 TCP/IP 协议。）
+* 其二，也就是我们网络协议承载的业务逻辑。
+
+明确了网络协议后，我们实现了 Mock 版本的服务端程序 paintdom。在实际项目中，Mock 程序往往会大幅提速团队的开发效率。
+
+##### 31.2 paintweb 与 paintdom 的对接
+虽然 paintweb 没有对接服务端，但从文档编辑的角度来说，它的功能是非常完整的。
+
+对接 paintdom 和 paintweb 的目的不是加编辑功能，而是让文档可以存储到服务端。
+
+严谨来说，paintweb 没有服务端是不正确的，paintweb 本身是一个 B/S 结构，它有它自己的服务端。如下：
+```go
+var wwwServer = http.FileServer(http.Dir("www"))
+
+func handleDefault(w http.ResponseWriter, req *http.Request) {
+  if req.URL.Path == "/" {
+    http.ServeFile(w, req, "www/index.htm")
+	return
+  }
+  req.URL.RawQuery = "" // skip "?params"
+  wwwServer.ServeHTTP(w, req)
+}
+
+func main() {
+  http.HandleFunc("/", handleDefault)
+  http.ListenAndServe(":8888", nil)
+}
+```
+可以看出，paintweb 自己的服务端基本上没干什么事情，就是一个非常普通的静态文件下载服务器，提供给浏览器端下载 HTML + CSS + JavaScript 等内容。
+###### 可见，paintweb 的服务端完全是“平庸”的，与业务无关。具体的业务，都是通过 www 目录里面的文件来做到的。
+
+##### 那么 paintweb 怎么对接 paintdom 呢？
+* 物理上的对接比较简单，只是个反向代理服务器而已，代码如下：
+```go
+func newReverseProxy(baseURL string) *httputil.ReverseProxy {
+  rpURL, _ := url.Parse(baseURL)
+  return httputil.NewSingleHostReverseProxy(rpURL)
+}
+
+var apiReverseProxy = newReverseProxy("http://localhost:9999")
+
+func main() {
+  http.Handle("/api/", http.StripPrefix("/api/", apiReverseProxy))
+}
+```
+可见，paintweb 的服务端干的事情仍然是 “平庸” 的，只是把发往 http://localhost:8888/api/xxx 的请求，原封不动地发往 http://localhost:9999/xxx 而已。
+
+###### 现实中，paintweb 的服务端干的事情稍微复杂一些。它背后不只是有业务服务器 paintdom，还有必不可少的帐号服务器（Account Service），用来支持用户登录/登出。
+###### 帐号服务器是一个基础架构类的服务，与业务无关。 （请思考类比微信扫码登陆）
+
+##### 最终，paintweb 自身的服务端仍是业务无关的。它做这样一些事情：
+* Web 前端文件的托管（作为静态文件下载服务器）；
+* 支持帐号服务，实现 Web 的用户登录；
+* 做业务协议的转译，将 Session-based 的 API 请求转为 Multi-User 的 API 请求。
+
+##### 补充： “胖前端” 与 “胖后端”
+假设 Web 自身的业务逻辑都是通过 JavaScript 来实现的，这意味着我们是基于 “胖前端” 模式。
+“胖后端” 模式，意味着大部分的前端用户行为，都是由后端支持的，缺点是没办法支持离线。
+###### 在 “胖后端” 模式下，推荐基于类似 PHP 这种胶水语言来实现 Web 后端的业务代码。
+
+##### 31.3 计算变更
+—— 听起来挺简单一件事情？其实很复杂。
+
+* 第一件要做的事情是： 怎么知道断网后离线编辑过的内容有哪些？
+    * 思路一，每次都完整保存整篇文档。
+    * 思路二，记录完整的编辑操作历史。
+    * 思路三，给对象增加版本号。 通过对比整个文档的基版本，与某个对象的版本 ver。如果 ver > baseVer，说明上一次同步完成后，该对象发生了变更。
+
+##### 31.4 同步变更
+—— 有了变更的信息，怎么同步给服务端？
+
+* 思路一，把变更还原为一条条编辑操作发给服务端。（还原过程过于复杂）
+* 思路二，修改网络协议，增加同步接口。
+
+###### 原则： 要一贯坚持的架构准则是不要烧脑。尤其对大部分非性能敏感的业务代码，简单易于实施为第一原则。
+
+思考： 在我们讨论相互配合的接口时，我们非常尊重业务逻辑，定义了一系列的编辑操作。但是，**到最后却发现，它们统统不管用，我们要的是一个同步协议。**
+
+##### 31.5 加载文档
+这个过程的难点在于怎么根据服务端返回的 json 数据重建整个文档。
+
+问题，
+* 图形（Shape）的网络协议中的数据格式，和 localStorage 中是不同的。
+* 从预测变更的角度，画图程序支持的图形（Shape）的种类会越来越多。
+
+这两个事情一起看，为此我们做了一次重构。重构目标是：
+* 统一 localStorage 和网络协议中的图形表示；
+* 增加新的图形种类要很容易，代码非常内聚，不必到处修改代码。
+
+###### 为此我们增加 qshapes: QSerializer 全局变量，允许各种图形类型注册自己的创建方法（creator）进去。示意代码如下：
+```javascript
+qshapes.register("rect", function(json) {
+  return new QRect(json)
+})
+```
+
+为了支持 QSerializer 类，每个图形需要增加两个方法：
+```javascript
+interface Shape {
+  constructor(json: Object)
+  toJSON(): Object
+}
+```
+有了这个能力，我们加载文档就水到渠成了。
+
+完整来说，加载文档的场景分为这样三类：
+* _loadBlank，即加载新文档。
+* _loadTempDoc，即加载一个临时文档。
+* _loadRemote，即加载一个远程文档。
+
+另外，加载文档结束后，QPaintDoc 会发出 onload 消息。这个消息当前会被 QPaintView 响应，用来刷新界面。
+
+##### 31.6 Model 层的厚度
+一个有趣的事实是，多个版本的迭代，基本上都是以变更 Model 层为多。
+
+我们深刻思考这个问题的话，会有这样一个推论：
+* 如果我们不是让 Model 层代码以内聚的方式放在一起，而是让它自由的散落于各处，那么我们的代码变更质量会非常不受控。
