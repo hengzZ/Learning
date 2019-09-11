@@ -926,4 +926,100 @@ interface Shape {
 一个有趣的事实是，多个版本的迭代，基本上都是以变更 Model 层为多。
 
 我们深刻思考这个问题的话，会有这样一个推论：
-* 如果我们不是让 Model 层代码以内聚的方式放在一起，而是让它自由的散落于各处，那么我们的代码变更质量会非常不受控。
+###### 如果我们不是让 Model 层代码以内聚的方式放在一起，而是让它自由的散落于各处，那么我们的代码变更质量会非常不受控。
+
+#### 32. 辅助界面元素的架构设计
+辅助界面元素非常常见，它其实就是通用控件，或者我们自定义的控件。
+
+##### 32.1 为了便于修改辅助界面元素，计划引入统一的辅助界面元素的框架。
+这个框架长什么样？
+* 首先，每个界面元素使用的时候，统一以 \<div type="xxx"> 来表示。
+* 其次，引入一个全局的 qcontrols: QControls 实例，所有我们定义的控件都向它注册（register）自己。 （注册的目的是，建立类型（type）和控件的构建函数（control）的关联表。）
+
+```javascript
+# QControls 注册一个自定义控件 —— register 成员函数
+class QControls {
+  constructor() {
+    this.data = {}
+  }
+  register(type, control) {
+    this.data[type] = control
+  }
+}
+
+# QControls 依次构建自定义控件 —— init 成员函数
+class QControls {
+  init() {
+    let divs = document.getElementsByTagName("div")
+    let n = divs.length
+    for (let i = n-1; i >= 0; i--) {
+      let div = divs[i]
+      let type = div.getAttribute("type")
+      if (type != null) {
+        let control = this.data[type]
+        if (control) {
+          control(div)
+        }
+      }
+    }
+  }
+}
+```
+
+##### 一个自定义控件 BaseColorPicker 的构造函数代码
+```javascript
+function BaseColorPicker(div) {   # —— 自定义控件 BaseColorPicker
+  let id = div.id
+  let onchange = div.onchange
+  let palette = div.getAttribute("palette")
+  let colors = palette.split(",")
+  let options = []
+  for (let i in colors) {
+    let color = colors[i]
+    let n = color.length
+    if (color.charAt(n-1) == ")") {
+      let offset = color.indexOf("(")
+      options.push(`<option value="` + color.substring(0, offset) + `">` + color.substring(offset+1, n-1) + `</option>`)
+    } else {
+      options.push(`<option value="` + color + `">` + color + `</option>`)
+    }
+  }
+  div.outerHTML = `<select id="` + id + `">` + options.join("") + `</select>`  # div 到其他 html 元素的替换
+  let elem = document.getElementById(id)  # 根据 id 获取实际界面控件
+  if (onchange) {
+    elem.onchange = onchange              # 事件响应函数与事件绑定
+  }
+}
+
+qcontrols.register("BaseColorPicker", BaseColorPicker)  # 在 QControls 中注册自己的构造函数
+```
+构建函数的代码大体分为如下三步，
+* 从占位的 div 元素中读入所有的输入参数。这里是 id, onchange, palette。
+* 把占位的 div 元素替换为实际的界面。也就是 div.outerHTML = xxx 这段代码。
+* 把事件响应函数安装到实际界面的事件中。
+
+##### 32.2 jQuery 颜色选择器
+—— 引入现成的框架代码 jQuery。
+
+现在，考虑替换颜色选择器的实现。 对待 jQuery，我们可以有两种态度：
+* 一种是认为 jQuery 设计非常优良，并且很喜欢，于是决定将其作为团队的编程用的基础框架。
+    * 利： 在这种态度下，我们允许 jQuery 风格的代码蔓延得到处都是。便于开发。
+    * 弊： 风险是不低的。有一天我们不想再基于 jQuery 开发了...意味着大量的模块需要进行调整。
+* 另一种态度是，认为 jQuery 并不是我们的主体框架，只是有些模块用了社区的成果，需要引入 jQuery。
+    * 利： 这种情况下，会尽可能限制 jQuery 的使用范围，尽量不要让它的代码蔓延，被限制在少数使用场景。
+    * 弊： 需要有自己的基础开发框架。 同时，需要包装一下使用的基础库组件。
+
+###### 第二种态库是企业常采用的态度，它们定义自己的基础开发框架，虽然..实现的时候是包装一下社区的基础库组件。
+
+##### 32.3 辅助界面元素的架构设计
+为什么当前的这些辅助界面元素没有基于 MVC 架构来编写？是因为辅助界面元素不适合用 MVC 架构来编写么？
+* 当然不是。更本质的原因是因为它们规模太小了。
+* 但并不是所有辅助界面元素都这么简单。 （把前面实战的 “画图” 程序，改造成一个标准的辅助界面元素）
+
+###### 过于短小，就没必要有那么清楚的模块划分。
+
+##### 32.4 总结
+###### 辅助界面元素（或称自定义控件）的架构设计，从大的实现逻辑来说，它和应用程序不应该有本质的不同。
+但控件总是要考虑支持多实例，这会带来一些细节上的差异。 编码的时候请多考虑**控件化。**
+* 不见得什么桌面应用程序都要考虑把它控件化。但是我们花一些精力去思考控件化的话，会有助于你对架构设计中的一些决策提供帮助。
+* 更重要的，其实是让你有机会形成更好的架构设计规范。
