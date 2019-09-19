@@ -10,7 +10,9 @@ import csv
 
 def feature_transformation(features, degree):
 	poly = PolynomialFeatures(degree=degree, include_bias=False)
-	return poly.fit_transform(features)
+	new_features = poly.fit_transform(features)
+	powers = poly.powers_   ## the outputs: powers_[i, j] is the exponent of the jth input in the ith output.
+	return powers, new_features
 
 
 def export(X, Y, coef, intercept):
@@ -37,7 +39,7 @@ Y = np.array(np.mat(
 
 
 if __name__ == '__main__':
-	new_features = feature_transformation(X, 2)
+	powers, new_features = feature_transformation(X, 2)
 
 	reg = linear_model.Ridge(alpha=.5)	
 	reg.fit(new_features, Y)
@@ -48,3 +50,4 @@ if __name__ == '__main__':
 	print(reg.coef_)
 	print(reg.intercept_)
 
+	print('powers', powers)
