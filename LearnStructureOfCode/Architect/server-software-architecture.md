@@ -394,3 +394,88 @@ Redis 和 memcached 都是实用型的瑞士军刀，很有用，但是，我们
 
 #### Part 3.3 —— 业务架构（系统设计/子系统划分）
 大方向来说，业务架构必然是领域性的，与你所从事的行业息息相关。但是，如同桌面程序有 MVC 模式一样，服务端的业务架构也会有自己的套路。
+
+#### 41. 服务端的 “业务架构” 建议
+
+##### 41.1 服务端的划分
+一般把服务端划分成两层： Multi-User Model 层、Web 层。
+* Web 层又进一步划分为： Session-based Model 和 Session-based ViewModel。
+
+##### 41.2 开发范畴划分
+一般认为，Session-based ViewModel 层属于桌面开发的范畴，哪怕是胖后端的模式下也会这样去归类。
+``在胖后端的方式下，ViewModel 不再是由 JavaScript 完成，而是由类似 PHP 之类的语言完成。``
+
+一般来说，Session-based Model 是一个非常简单的转译层。 因此，对于业务架构，主要谈的是 Multi-User Model 层。
+
+##### 41.3 Multi-User Model 层
+##### 41.3.1 网络协议
+第一个重要话题是网络协议，它是服务端程序的使用界面（接口）。
+
+什么是网络协议？
+* 这一层网络协议往往提供的是 RESTful API，我们也会称其为 RESTful API 层。
+
+###### 补充： 什么是 RESTful ？
+```
+RESTful 是一种风格的名字。 基于 HTTP，可以使用 XML 格式定义或 JSON 格式定义。
+# REST (Representational State Transfer) 指的是一组架构约束条件和原则。
+  ● 每一个 URI 代表 1 种资源；
+  ● 客户端使用 GET、POST、PUT、DELETE 4 个表示操作方式的动词对服务端资源进行操作； （分别对应：获取、新建(也可用于更新)、更新、删除）
+  ● 通过操作资源的表现形式来操作资源，资源的表现形式是 XML 或者 HTML；
+  ● 客户端与服务端之间的交互在请求之间是无状态的。 （即：每个请求都必须包含理解请求所必需的所有信息。 “无会话（Session）”）
+无 Session 的好处和意义： 服务器可以在请求之间的任何时间点重启，客户端不会得到通知。 （业务在逻辑上不宕机！！）
+```
+
+###### 补充： 再看 Model 层
+```
+对于 MVC 模式，无论是 桌面端 还是 服务端，Model 层提供核心业务，它不存在 “临时状态”，每一个对外提供的接口（API）都完成一项完整的业务。
+## Model 层 每一个对外提供的接口（API）都完成一项完整的业务！！！
+## “无会话（session）”的概念 可以实现就是因为这个特点。
+
+再看 MVC，
+    ▫ Model 层就是一个个完整的业务，原则是 “无会话（Session）”。
+    ▫ View 层就是界面呈现和用户交互事件。 ViewModel 属于 View 层的辅助。
+    ▫ 最后剩下的 Controller 层就是，用户交互事件翻译成业务 API 调用，以及 “临时状态(中间状态)” 的保存更新关联等等。
+提示: 如果存在会话（Session），就意味着一定有 Controllers。
+```
+
+当然，除了 RESTful API 这一种 API 规范，还有基于 XML 的有 SOAP（简易对象访问协议）、WSDL（Web 服务描述语言）等。
+
+另外，有人会觉得文本协议效率不够好，希望采用二进制的协议。 比如，Facebook 早年搞了个 thrift（已弃用），Google 也搞了个 protobuf 协议，并且基于 protobuf 搞了一个 grpc 框架。
+
+还有一个选择是 GraphQL，针对企业在有多个业务的时候，又不想发布很多套 RESTful API。
+（GraphQL 理念虽然先进，但是概念复杂，并不易于掌握，不温不火。）
+
+###### 选择哪个？ 更倾向于 RESTful API。 只有 HTTP 协议，才有被广泛采纳的专门的应用层网关，比如 nginx 和 apache。这一点千万不要忘记。
+```
+Google 的 grpc 其实也是基于 HTTP 协议的，只不过它更推荐 HTTP 2.0，因为效率已经经过高度的优化。
+虽然 protobuf 是二进制的，但它取代的不是 HTTP 协议，而是 json、xml 或 Web 表单（form）。
+（凡是想对 HTTP 协议取而代之的，都会挂掉。）
+```
+
+##### 41.3.2 业务 API
+一旦确定我们选用的网络协议规范，剩下的就是如何定义具体的业务 API 了。
+
+##### 41.3.3 授权（Authorization）
+我们第二个要考虑的是授权（Authorization）。 当前，主流的授权方式有两种：一种是基于 Token，一种是基于 AK/SK。
+
+* 基于 AK/SK 的授权，多数发生在面向企业用户提供 API。即 To B 场景。 AK/SK 授权的背后是数字签名。
+* 基于 Token 的授权，多数发生在面向终端用户的场景。To C 场景。 当前推荐的 Token 授权标准是 OAuth 2.0，它得到了广泛的支持。
+
+授权这块的选择是相对简单的。 更多需要考虑的是： 如何构建业务无关的用户帐号体系和授权系统。
+``它们隶属于通用的帐号与授权子系统，可以做到与业务无关。``
+
+##### 41.3.4 RPC 框架
+确定了业务 API，明确了授权机制，下面就是怎么实现的问题了。
+
+* 如果业务 API 选择了基于 protobuf，那么 grpc 框架是个不错的选择。
+* 对于 RESTful API，七牛云对外开源了一套非常精简的 restrpc 服务器框架 https://github.com/qiniu/http
+
+restrpc 框架的使用样例 <br>
+https://github.com/qiniu/http/tree/master/examples/authrestrpc
+
+##### 41.3.5 单元测试
+对业务 API 进行单元测试。
+
+七牛开源的 httptest 框架。 https://github.com/qiniu/httptest
+
+可以依葫芦画瓢，参考 https://github.com/qiniu/qiniutest 实现一个适合你们公司的授权机制下的 httptest 工具。
