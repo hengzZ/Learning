@@ -163,8 +163,8 @@ SMTP 协议 （Simple Mail Transfer Protocol）。
   mailx -s "邮箱测试" xxxx@qq.com < message_file.txt
   ```
 
-##### Python3 实现 163 邮箱 SMTP 发送邮件
-使用 SMTP 协议发送邮件，首先需要登陆 163 邮箱查看，你的发件人邮箱是否有开启 SMTP 协议。 在设置中开启 SMTP 协议。
+##### Python3 实现 QQ 邮箱 SMTP 发送邮件
+使用 SMTP 协议发送邮件，首先需要登陆 QQ 邮箱查看，你的发件人邮箱是否有开启 SMTP 协议。 在设置中开启 SMTP 协议。
 
 注意： 开通后会让你设置密码，该密码要记好，在进行 SMTP 交互的时候，提到的 password 就是这个授权密码，而不是邮箱密码！！
 
@@ -173,18 +173,19 @@ SMTP 协议 （Simple Mail Transfer Protocol）。
 import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
- 
+
+
 # 第三方 SMTP 服务
-mail_host = "smtp.163.com"      # SMTP 服务器
-mail_user = "***"               # 用户名
-mail_pass = "***"               # 授权密码，非登录密码
- 
-sender = 'xxx@163.com'          # 发件人邮箱
-receivers = ['xxx@qq.com']      # 接收邮件列表，填几个就是几个收件人。
- 
-content = '我用Python'
-subject = '人生苦短'               # 邮件主题
- 
+mail_host = "smtp.qq.com"       # SMTP 服务器
+#mail_user = "xxxxxx@qq.com"    # 用户名
+#mail_pass = "xxxxxxxxxxxxx"    # 授权密码，非登录密码
+
+sender = 'xxxxxx@qq.com'          # 发件人邮箱
+receivers = ['xxxxxx@qq.com']     # 接收邮件列表，填几个就是几个收件人。
+
+content = 'STMP over SSL Test.'
+subject = 'SMTP EMAIL CLIENT TEST'                 # 邮件主题
+
 def sendEmail():
     message = MIMEText(content, 'plain', 'utf-8')  # 内容, 格式, 编码
     message['From'] = "{}".format(sender)
@@ -195,10 +196,12 @@ def sendEmail():
         smtpObj = smtplib.SMTP_SSL(mail_host, 465)  # 启用 SSL 发信, 端口一般是 465
         smtpObj.login(mail_user, mail_pass)         # 登录验证
         smtpObj.sendmail(sender, receivers, message.as_string())  # 发送
-        print("mail has been send successfully.")
+        smtpObj.quit()
     except smtplib.SMTPException as e:
         print(e)
- 
+    finally:
+        print('Done.')
+
 def send_email2(SMTP_host, from_account, from_passwd, to_account, subject, content):
     email_client = smtplib.SMTP(SMTP_host)
     email_client.login(from_account, from_passwd)
@@ -210,7 +213,7 @@ def send_email2(SMTP_host, from_account, from_passwd, to_account, subject, conte
     email_client.sendmail(from_account, to_account, msg.as_string())
     # quit
     email_client.quit()
- 
+
 if __name__ == '__main__':
     sendEmail()
     # receiver = 'xxx@xxx.com'
