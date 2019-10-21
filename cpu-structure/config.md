@@ -58,3 +58,17 @@ $ sar -A 1
 $ iostat -x 1
 $ mpstat 1
 ```
+
+##### Debian 系列 Linux 内核切换
+```
+# 查看内核列表
+$ dpkg --list | grep linux-image
+# 查看 grub 信息
+grep menuentry /boot/grub/grub.cfg
+# 修改 /etc/default/grub 指定启动时的内核版本
+vim /etc/default/grub 修改 GRUB_DEFAULT=0 为 GRUB_DEFAULT=2
+注意，推荐使用字符串配置法，如“Ubuntu, with Linux 5.0.0-31-generic”，而不是使用 2。
+# 更新 grub 配置
+sudo update-grub
+# reboot 重启，并使用 uname -a 查看内核版本。
+```
