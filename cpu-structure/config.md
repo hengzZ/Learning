@@ -72,3 +72,10 @@ vim /etc/default/grub 修改 GRUB_DEFAULT=0 为 GRUB_DEFAULT=2
 sudo update-grub
 # reboot 重启，并使用 uname -a 查看内核版本。
 ```
+
+##### perf 采集 CPU 运行性能: MIPS、CPI
+```
+$ perf stat -e "cycles,instructions" -I 1000  # 1000 表示1s 刷新一次
+$ perf list  # 查看支持多少事件
+$ perf record -e "cycles,instructions" ls  # 表示抓 ls 这个命令得所有得事件，用 perf report 查看结果
+```
