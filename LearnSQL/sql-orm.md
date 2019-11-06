@@ -245,6 +245,77 @@ SQLAlchemy 是一个常用的数据库抽象层，因此其特点是需要一定
 * pysqlite3 https://dormousehole.readthedocs.io/en/latest/patterns/sqlite3.html
 * pySQLAlchemy https://dormousehole.readthedocs.io/en/latest/patterns/sqlalchemy.html
 * SQLite 手册 https://www.runoob.com/sqlite/sqlite-intro.html
+* SQLAlchemy 中文手册 https://www.osgeo.cn/sqlalchemy/
+
+## 关于 SQLAlchemy 中的 mapper() 函数
+
+##### 1. 经典描述法
+```python
+#
+# 定义两个表 User 和 Address，两个表的关系在 User 类定义（一对一关系）。
+#
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String, ForeignKey
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = 'user'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    fullname = Column(String)
+    password = Column(String)
+
+    addresses = relationship("Address", backref="user", order_by="Address.id")
+
+class Address(Base):
+    __tablename__ = 'address'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(ForeignKey('user.id'))
+    email_address = Column(String)
+```
+
+##### 2. 用 mapper() 来改写上述代码
+```python
+from sqlalchemy import Table, MetaData, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import mapper
+
+metadata = MetaData()
+
+user = Table('user', metadata,
+            Column('id', Integer, primary_key=True),
+            Column('name', String(50)),
+            Column('fullname', String(50)),
+            Column('password', String(12))
+        )
+
+address = Table('address', metadata,
+            Column('id', Integer, primary_key=True),
+            Column('user_id', Integer, ForeignKey('user.id')),
+            Column('email_address', String(50))
+            )
+
+class User(object):
+    def __init__(self, name, fullname, password):
+        self.name = name
+        self.fullname = fullname
+        self.password = password
+
+class Address(object):
+    def __init__(self, user_id, email_address):
+        self.user_id = user_id
+        self.fullname = fullname
+        self.email_address = email_address
+
+mapper(User, user)
+mapper(User, user, properties={
+    'addresses' : relationship(Address, backref='user', order_by=address.c.id)
+})
+
+mapper(Address, address)
+```
 
 
 ## 示例
