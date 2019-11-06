@@ -113,4 +113,6 @@ class Article(db.Model):
 
 
 ## SQLAlchemy 多表操作
-略
+手册：
+* 详细文档 https://www.osgeo.cn/sqlalchemy/
+* 对象关系教程 https://www.osgeo.cn/sqlalchemy/orm/tutorial.html
