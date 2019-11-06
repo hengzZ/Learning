@@ -309,7 +309,6 @@ class Address(object):
         self.fullname = fullname
         self.email_address = email_address
 
-mapper(User, user)
 mapper(User, user, properties={
     'addresses' : relationship(Address, backref='user', order_by=address.c.id)
 })
