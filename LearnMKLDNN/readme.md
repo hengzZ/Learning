@@ -86,3 +86,31 @@ export MKLDNN_VERBOSE=1
 ###### reference:
 * source code: https://github.com/intel/mkl-dnn
 * tutorial ref: https://software.intel.com/ru-ru/node/731389
+
+# OpenCV 环境安装
+
+##### 方式1: 从源码编译安装 （不推荐）
+该方式主要针对项目有明确的指定版本时的需求。
+
+##### 方式2：从 Linux 源安装
+```bash
+# Debian 系列
+sudo apt-get install libopencv-dev
+# RedHat 系列
+sudo yum install opencv-devel
+```
+注意，旧版系统默认安装 2.4.5，新版系统可能安装 3.2.0 或者以上版本。
+
+### 头文件兼容性问题解决
+
+##### 1 cv.h 的问题
+2.4 版本的开发者可能使用如下的头引用：
+```c++
+#include <cv.h>
+```
+3.0 以上版本对应的头引用如下：
+```c++
+#include <opencv/cv.hpp>
+```
+
+# OpenMP 环境安装
