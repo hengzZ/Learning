@@ -28,9 +28,9 @@
 
 **创造型模式**
 ```
-1. 简单工厂模式 （Simple Factory Pattern）         （难度：2 频率：3）
-2. 工厂方法模式 （Factory Method Pattern）         （难度：2 频率：5）
-3. 抽象工厂模式 （Abstract Factory Pattern）       （难度：4 频率：5）
+1. 简单工厂模式 （Simple Factory Pattern）    （难度：2 频率：3）
+2. 工厂方法模式 （Factory Method Pattern）    （难度：2 频率：5）
+3. 抽象工厂模式 （Abstract Factory Pattern）  （难度：4 频率：5）
 4. 单例模式 （Singleton Pattern）             （难度：1 频率：4）
 5. 原型模式 （Prototype Pattern）             （难度：3 频率：3）
 6. 建造者模式 （Builder Pattern）             （难度：4 频率：2）
@@ -44,7 +44,7 @@
 4. 装饰模式   （Decorator Pattern）    （难度：3 频率：3）
 5. 外观模式   （Facade Pattern）       （难度：1 频率：5）
 6. 享元模式   （Flyweight Pattern）    （难度：4 频率：1）
-7. 代理模式   (Proxy Pattern)        （难度：3 频率：4）
+7. 代理模式   (Proxy Pattern)          （难度：3 频率：4）
 ```
 
 **行为型模式**
@@ -62,6 +62,37 @@
 11. 访问者模式   （Visitor Patter）                 （难度：4 频率：1）
 ```
 
+#### 目录
+
+##### 创造型模式
+1. 简单工厂模式 [simple-factory-pattern.md](simple-factory-pattern.md)
+2. 工厂方法模式 [factory-method-pattern.md](factory-method-pattern.md)
+3. 抽象工厂模式 [abstract-factory-pattern.md](abstract-factory-pattern.md)
+4. 单例模式 [singleton-pattern.md](singleton-pattern.md)
+5. 原型模式 [prototype-pattern.md](prototype-pattern.md)
+6. 建造者模式 [builder-pattern.md](builder-pattern.md)
+
+##### 结构型模式
+1. 适配器模式 [adapter-pattern.md](adapter-pattern.md)
+2. 桥接模式 [bridge-pattern.md](bridge-pattern.md)
+3. 组合模式 [composite-pattern.md](composite-pattern.md)
+4. 装饰模式 [decorator-pattern.md](decorator-pattern.md)
+5. 外观模式 [facade-pattern.md](facade-pattern.md)
+6. 享元模式 [flyweight-pattern.md](flyweight-pattern.md)
+7. 代理模式 [proxy-pattern.md](proxy-pattern.md)
+
+##### 行为型模式
+1. 职责链模式 [chain-of-responsibility-pattern.md](chain-of-responsibility-pattern.md)
+2. 命令模式 [command-pattern.md](command-pattern.md)
+3. 解释器模式 [interpreter-pattern.md](interpreter-pattern.md)
+4. 迭代器模式 [iterator-pattern.md](iterator-pattern.md)
+5. 中介者模式 [mediator-pattern.md](mediator-pattern.md)
+6. 备忘录模式 [memento-pattern.md](memento-pattern.md)
+7. 观察者模式 [observer-pattern.md](observer-pattern.md)
+8. 状态模式 [state-pattern.md](state-pattern.md)
+9. 策略模式 [strategy-pattern.md](strategy-pattern.md)
+10. 模板方法模式 [template-method-pattern.md](template-method-pattern.md)
+11. 访问者模式 [visitor-pattern.md](visitor-pattern.md)
 
 <br>
 
