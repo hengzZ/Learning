@@ -79,3 +79,8 @@ $ perf stat -e "cycles,instructions" -I 1000  # 1000 表示1s 刷新一次
 $ perf list  # 查看支持多少事件
 $ perf record -e "cycles,instructions" ls  # 表示抓 ls 这个命令得所有得事件，用 perf report 查看结果
 ```
+
+### 查看 CPU 的某个核上运行的进程信息
+``CORENUM=34; ps -e -o pid,psr,cpu,cmd | grep -E  "^[[:space:]][[:digit:]]+[[:space:]]+${CORENUM}"``
+
+``CORENUM`` 为 htop 里面看到的核 id 减去 1。
