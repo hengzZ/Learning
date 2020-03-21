@@ -3,8 +3,9 @@
 * 本文档主要记录一些 高级特性的讲解。
 
 
-## 1. => 函数
-ES6 标准新增了一种新的函数：Arrow Function（箭头函数）
+## 1. => 函数 （箭头函数）
+
+> ES6 标准新增了一种新的函数：Arrow Function（箭头函数）
 
 ```javascript
 x => x * x
@@ -84,6 +85,53 @@ var obj = {
 };
 obj.getAge(2015); // 25
 ```
+
+### 总结
+
+#### 1.基础语法
+```javascript
+(param1, param2, …, paramN) => { statements }
+(param1, param2, …, paramN) => expression
+//相当于：(param1, param2, …, paramN) =>{ return expression; }
+
+// 当只有一个参数时，圆括号是可选的：
+(singleParam) => { statements }
+singleParam => { statements }
+
+// 没有参数的函数应该写成一对圆括号。
+() => { statements }
+```
+
+#### 2.高级语法
+```javascript
+//加括号的函数体返回对象字面量表达式：
+params => ({foo: bar})
+
+//支持剩余参数和默认参数
+(param1, param2, ...rest) => { statements }
+(param1 = defaultValue1, param2, …, paramN = defaultValueN) => { statements }
+
+//同样支持参数列表解构
+let f = ([a, b] = [1, 2], {x: c} = {x: a + b}) => a + b + c;
+f();  // 6
+```
+
+#### 3.为什么会有引入箭头函数的想法
+
+> 引入箭头函数有两个方面的作用：更简短的函数并且不绑定 this。
+
+* 在箭头函数出现之前，每一个新函数根据它是被如何调用的来定义这个函数的 this 值！！！ 即，
+   - 如果是该函数是一个构造函数，this 指针指向一个新的对象。
+   - 在严格模式下的函数调用下，this 指向 undefined。
+   - 如果是该函数是一个对象的方法，则它的 this 指针指向这个对象。
+   - 等等
+
+> ``this`` 被证明是令人厌烦的面向对象风格的编程。
+> 在 ECMAScript 3/5 中，通过将 this 值分配给封闭的变量，以解决 this 问题。 ``let vm = this;``
+
+> 而箭头函数不会创建自己的 this，它只会从自己的作用域链的上一层继承 this。
+
+**Mozilla 基金权威 JavaScript 教程：** https://developer.mozilla.org/zh-CN/docs/Web/JavaScript 。
 
 <br>
 
