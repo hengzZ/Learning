@@ -472,3 +472,250 @@ asyncFunction().then(function (value) {
 ###### reference
 * http://liubin.org/promises-book/
 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+<br>
+
+# Promise
+
+> Promise 对象用于表示一个异步操作的最终完成 (或失败)，及其结果值。
+
+因为大多数人仅仅是使用已创建的 Promise 实例对象，所以本教程将首先说明怎样使用 Promise，再说明如何创建 Promise。
+
+—— https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+<br>
+
+## 1.使用Promise
+
+本质上Promise是一个函数返回的对象，我们可以在它上面绑定回调函数，这样就不需要在一开始把回调函数作为参数传入这个返回Promise对象的函数了。
+
+> 现在，假设有一个名为 `createAudioFileAsync()` 的函数，它接收一些配置和两个回调函数，然后异步地生成音频文件。一个回调函数在文件成功创建时的被调用，另一个则在出现异常时的被调用。
+
+以下为使用 `createAudioFileAsync()` 的示例：
+
+```javascript
+// 成功的回调函数
+function successCallback(result) {
+  console.log("音频文件创建成功: " + result);
+}
+
+// 失败的回调函数
+function failureCallback(error) {
+  console.log("音频文件创建失败: " + error);
+}
+
+createAudioFileAsync(audioSettings, successCallback, failureCallback)
+```
+
+
+
+> 更现代的函数会返回一个 promise 对象，使得你可以将你的回调函数绑定在该 promise 上。
+
+如果函数 `createAudioFileAsync()` 被重写为返回promise的形式，我们就可以像下面这样简单地调用它：
+
+```javascript
+const promise = createAudioFileAsync(audioSettings); 
+promise.then(successCallback, failureCallback);
+```
+
+简写形式为
+
+```javascript
+createAudioFileAsync(audioSettings).then(successCallback, failureCallback);
+```
+
+
+
+我们把这个称为*异步函数调用*，这种形式有若干优点：
+
+**不同于“老式”的传入回调，在使用 Promise 时，会有以下约定：**
+
+- 在本轮 [事件循环](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/EventLoop#执行至完成) 运行完成之前，回调函数是不会被调用的。
+- 即使异步操作已经完成（成功或失败），在这之后通过 [`then()` ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then)添加的回调函数也会被调用。
+- 通过多次调用 `then()` 可以添加多个回调函数，它们会按照插入顺序执行。
+
+Promise 很棒的一点就是**链式调用**（**chaining**）。
+
+
+
+#### 链式调用
+
+连续执行两个或者多个异步操作是一个常见的需求，在上一个操作执行成功之后，开始下一个的操作，并带着上一步操作所返回的结果。
+
+> Promise 出现的原因是：通过创造一个 **Promise 链**来实现这种需求。
+
+见证奇迹的时刻：`then()` 函数会返回一个和原来不同的**新的Promise**：
+
+```javascript
+const promise2 = doSomething().then(successCallback, failureCallback);
+```
+
+> promise2 不仅表示 doSomething() 函数的完成，也代表了你传入的 successCallback 或者 failureCallback 的完成，这两个函数也可以返回一个 Promise 对象，从而形成另一个异步操作，这样的话，在 promise2 上新增的回调函数会排在这个 Promise 对象的后面。
+
+
+
+现在，我们可以开心的把回调绑定到返回的 Promise 上，形成一个 Promise 链：（语法糖）
+
+```javascript
+doSomething().then(function(result) {
+  return doSomethingElse(result);
+})
+.then(function(newResult) {
+  return doThirdThing(newResult);
+})
+.then(function(finalResult) {
+  console.log('Got the final result: ' + finalResult);
+})
+.catch(failureCallback);
+```
+
+then里的参数是可选的，`catch(failureCallback)` 是 `then(null, failureCallback)` 的缩略形式。
+
+
+
+如下所示，我们也可以用箭头函数来表示：
+
+```javascript
+doSomething()
+.then(result => doSomethingElse(result))
+.then(newResult => doThirdThing(newResult))
+.then(finalResult => {
+  console.log(`Got the final result: ${finalResult}`);
+})
+.catch(failureCallback);
+```
+
+**注意：一定要有返回值，否则，callback 将无法获取上一个 Promise 的结果。**
+
+
+
+#### Catch 的后续链式操作
+
+有可能会在一个回调失败之后继续使用链式操作，即 使用一个 `catch`，这对于在链式操作中抛出一个失败之后，再次进行新的操作很有用。
+
+```javascript
+new Promise((resolve, reject) => {
+    console.log('初始化');
+
+    resolve();
+})
+.then(() => {
+    throw new Error('有哪里不对了');
+        
+    console.log('执行「这个」”');
+})
+.catch(() => {
+    console.log('执行「那个」');
+})
+.then(() => {
+    console.log('执行「这个」，无论前面发生了什么');
+});
+```
+
+
+
+#### 错误传递
+
+以下示例有 3 次 failureCallback 的调用，而在 Promise 链中只有尾部的一次调用。
+
+```javascript
+doSomething()
+.then(result => doSomethingElse(value))
+.then(newResult => doThirdThing(newResult))
+.then(finalResult => console.log(`Got the final result: ${finalResult}`))
+.catch(failureCallback);
+```
+
+通常，一遇到异常抛出，浏览器就会顺着promise链寻找下一个 `onRejected` 失败回调函数或者由 `.catch()` 指定的回调函数。
+
+这和以下的同步代码的执行过程很相似：
+
+```javascript
+try {
+  let result = syncDoSomething();
+  let newResult = syncDoSomethingElse(result);
+  let finalResult = syncDoThirdThing(newResult);
+  console.log(`Got the final result: ${finalResult}`);
+} catch(error) {
+  failureCallback(error);
+}
+```
+
+> 在 ECMAScript 2017 标准的 `async/await` 语法糖中，这种与同步形式代码的对称性得到了极致的体现：
+
+```javascript
+async function foo() {
+  try {
+    const result = await doSomething();
+    const newResult = await doSomethingElse(result);
+    const finalResult = await doThirdThing(newResult);
+    console.log(`Got the final result: ${finalResult}`);
+  } catch(error) {
+    failureCallback(error);
+  }
+}
+```
+
+这个例子是在 Promise 的基础上构建的，例如，`doSomething()` 与之前的函数是相同的。你可以在[这里](https://developers.google.com/web/fundamentals/getting-started/primers/async-functions)阅读更多的与此语法相关的文章。
+
+
+
+至此，Promise 解决了回调地狱的基本缺陷。这对于构建异步操作的基础功能而言是很有必要的。
+
+
+
+#### Promise 拒绝事件
+
+>  当 Promise 被拒绝时，会有下文所述的两个事件之一被派发到全局作用域（通常而言，就是[`window`](https://developer.mozilla.org/zh-CN/docs/Web/API/Window)；如果是在 web worker 中使用的话，就是 [`Worker`](https://developer.mozilla.org/zh-CN/docs/Web/API/Worker) 或者其他 worker-based 接口）。
+
+这两个事件如下所示：
+
+- [`rejectionhandled`](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/rejectionhandled_event)
+
+  当 Promise 被拒绝、并且在 `reject` 函数处理该 rejection 之后会派发此事件。
+
+- **unhandledrejection**
+
+  当 Promise 被拒绝，但没有提供 `reject` 函数来处理该 rejection 时，会派发此事件。
+
+**以上两种情况中，PromiseRejectionEvent 事件都有两个属性，一个是 promise 属性，该属性指向被驳回的 Promise，另一个是 reason 属性，该属性用来说明 Promise 被驳回的原因。**
+
+
+
+更多 Promise 的使用语法，以及 JavaScript 特性：请阅读 https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Guide/Using_promises 。
+
+<br>
+
+
+## 2.Promise的构造函数
+
+```javascript
+const promise1 = new Promise(function(resolve, reject) {
+  /* executor 部分 */
+  setTimeout(function() {
+    resolve('foo');
+  }, 300);
+});
+
+promise1.then(function(value) {
+  console.log(value);
+  // expected output: "foo"
+});
+
+console.log(promise1);
+// expected output: [object Promise]
+```
+
+Promise 构造函数接收带有 `resolve` 和 `reject` 两个参数的函数 。**Promise构造函数执行时，立即执行传入函数的函数体内容，函数体的执行是在Promise构造函数返回所建promise实例对象前被调用。**
+
+
+
+> `resolve` 和 `reject` 函数被调用时，会分别将 promise 的状态改为 *fulfilled（*完成）或 rejected（失败）。
+>
+> executor 部分通常会执行一些异步操作，一旦异步操作执行完毕(可能成功/失败)，要么调用 ``resolve`` 函数来将 promise 状态改成 *fulfilled*，要么调用 `reject`  函数将 promise 的状态改为 rejected。
+
+
+
+如果在 executor 部分中抛出一个错误，那么该 promise 状态为 rejected。executor 部分的返回值被忽略。
+
+*更多内容同上，请查阅权威文档。*
