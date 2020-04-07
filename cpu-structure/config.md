@@ -84,3 +84,10 @@ $ perf record -e "cycles,instructions" ls  # 表示抓 ls 这个命令得所有�
 ``CORENUM=34; ps -e -o pid,psr,cpu,cmd | grep -E  "^[[:space:]][[:digit:]]+[[:space:]]+${CORENUM}"``
 
 ``CORENUM`` 为 htop 里面看到的核 id 减去 1。
+
+
+### 设置 CPU 闲时功耗
+```bash
+perf stat -I 1000 -e "instructions,cycles"      #查看CPI
+cpupower idle-set -d 2                          #功耗
+```
