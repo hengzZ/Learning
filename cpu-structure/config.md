@@ -91,3 +91,8 @@ $ perf record -e "cycles,instructions" ls  # 表示抓 ls 这个命令得所有�
 perf stat -I 1000 -e "instructions,cycles"      #查看CPI
 cpupower idle-set -d 2                          #功耗
 ```
+
+## OpenMP 并行线程设置
+```bash
+export OMP_NUM_THREADS=128
+```
