@@ -541,6 +541,13 @@ for variable in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
 	print variable
 ```
 
+#### 使用 slim 库的 model_analyzer 打印权重信息
+```python
+model_vars = tf.trainable_variables()
+slim.model_analyzer.analyze_vars(model_vars, print_info=True)
+```
+**理清完整的网络拓扑信息，请结合 nodes 信息， ops 信息和 slim 打印的权重信息。**
+
 
 ## Tensorflow - High Level Library
 * Keras
