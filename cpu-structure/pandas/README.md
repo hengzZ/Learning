@@ -191,3 +191,154 @@ ret[ret["时间"] >= "1900/1/1 09:00:00"].to_excel("9月迟到名单.xlsx", inde
 ``` ipython
 filter = df.groupby('Team').filter(lambda x: len(x) >= 3)
 ```
+
+
+# Pandas 数据选取 df[] df.loc[] df.iloc[] df.ix[] df.at[] df.iat[]
+
+#### 1 列选取
+
+Dataframe 对象的每一列都有列名，可以通过列名实现对列的选取。列选取方式共有三种：标签索引、标签列表、Callable 对象。
+
+``` ipython
+# 标签索引：选取单个列
+>>> df['name']
+```
+
+``` ipython
+# 标签列表：选取多个列
+>>> df[['name','age']]
+```
+
+``` ipython
+# Callable 对象
+# 选取第一列
+>>> df[lambda df: df.columns[0]]
+```
+
+#### 2 行选取
+
+选取行的方式包括三种：整数索引切片、标签索引切片和布尔数组。
+
+``` ipython
+>>> df
+
+    name   age  gender isMarried
+a    Joe  25.0       1       yes
+b   Mike  32.0       0       yes
+c   Jack  18.0       1        no
+d   Rose   NaN       1       yes
+e  David  15.0       0        no
+f  Marry  20.0       1        no
+g  Wansi  41.0       0        no
+h   Sidy   NaN       0       yes
+i  Jason  37.0       1        no
+j   Even  32.0       0        no
+```
+
+``` ipython
+# 整数索引切片：前闭后开 [)
+# 选取第一行
+>>> df[0:1]
+# 选取前两行
+>>> df[0:2]
+```
+
+``` ipython
+# 标签索引切片：前闭后闭 []
+# 选取第一行
+>>> df[:'a']
+# 选取前两行
+>>> df['a':'b']
+```
+
+``` ipython
+# 布尔数组
+# 选取前三行
+>>> df[[True,True,True,False,False,False,False,False,False,False]]
+# 选取所有age大于30的行
+>>> df[[each>30 for each in df['age']]]
+# 通过布尔数组的方式，又可以衍生出下面的选取方式（选取所有age大于30的行）
+>>> df[df['age']>30]
+# 选取出所有age大于30，且isMarried为no的行
+>>> df[(df['age']>30) & (df['isMarried']=='no')]
+# 选取出所有age为20或32的行
+>>> df[(df['age']==20) | (df['age']==32)]
+```
+
+#### 3 区域选取
+
+采用 ``df.loc[] df.iloc[] df.ix[]`` 这三种方法进行数据选取时，方括号内必须有两个参数：第一个参数是对行的筛选条件，第二个参数是对列的筛选条件，两个参数用逗号隔开。
+
+- df.loc[] 只能使用标签索引，不能使用整数索引，通过便签索引切边进行筛选时，前闭后闭。
+- df.iloc[] 只能使用整数索引，不能使用标签索引，通过整数索引切边进行筛选时，前闭后开。
+- df.ix[] 既可以使用标签索引，也可以使用整数索引。
+
+#### 4 单元格选取
+
+单元格选取包括 ``df.at[]`` 和 ``df.iat[]`` 两种方法。使用时必须输入两个参数，即行索引和列索引。其中，df.at[] 只能使用标签索引，df.iat[] 只能使用整数索引。 ``df.at[] 和 df.iat[] 选取的都是单个单元格（单行单列），所以返回值都为基本数据类型。``
+
+
+# Pandas 按行按列遍历
+
+遍历数据有以下三种方法:
+- iteritems() 按列遍历，将 df 的每一列迭代为（列名，Series）对。
+- iterrows() 按行遍历，将 df 的每一行迭代为（index，Series）对。
+- itertuples() 按行遍历，将 df 的每一行迭代为元组，比 iterrows() 效率高。
+
+``` ipython
+for index, col in df.iteritems():
+    print(index)
+
+for index, row in df.iterrows():
+    print(index)
+
+for row in df.itertuples():
+    print(index)
+```
+
+# 索引替换或添加新的列
+
+``` ipython
+def time_formatter(ts):
+    # format: '%Y%m%d%H%M%S'
+    tss = str(ts)
+    year = int(tss[0:4])
+    month = int(tss[4:6])
+    days = int(tss[6:8])
+    hours = int(tss[8:10])
+    minutes = int(tss[10:12])
+    seconds = int(tss[12:14])
+    time = datetime.datetime(year, month, days) + datetime.timedelta(weeks=0, days=0, hours=hours, minutes=minutes,  seconds=seconds, milliseconds=0, microseconds=0)
+    return time
+
+def change_index_by_ts(df):
+    index = []
+    for ts in df['ts']:
+        time = time_formatter(ts)
+        index.append(time)
+    df.index = pd.Series(index)
+```
+
+``` ipython
+# 添加新的列
+
+# 第一种直接赋值
+df["newColumn"] = newValue
+# 第二种用concat组合两个DataFrame
+pd.concat([oldDf, newDf])
+
+# 更改某一列的值
+
+# 第一种，replace
+df["column1"] = df["column1"].replace(oldValue, newValue)
+# 第二种，map
+df["column1"] = df["column1"].map({oldValue: newValue})
+# 第三种，loc
+# 将column2 中某些行（通过column1中的value1来过滤出来的）的值为value2
+df.loc[df["column1"] == value1, "column2"] = value2
+
+# 补全缺失值（数据清洗）
+
+# fillna填充缺失值
+df["column1"] = df["column1"].fillna(value1)
+```
