@@ -342,3 +342,254 @@ df.loc[df["column1"] == value1, "column2"] = value2
 # fillna填充缺失值
 df["column1"] = df["column1"].fillna(value1)
 ```
+
+<br>
+
+# Sample Code
+
+``` python
+import os, errno
+import numpy as np
+import pandas as pd
+import datetime
+import matplotlib.pyplot as plt
+from scipy.stats import pearsonr
+
+
+def mkdir_p(path):
+    try:
+        os.makedirs(path, exist_ok=True)
+    except OSError as exc: #Python >2.5 (except OSError, exc: for Python <2.5)
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+def time_formatter(ts):
+    # format: '%Y%m%d%H%M%S'
+    tss = str(ts)
+    year = int(tss[0:4])
+    month = int(tss[4:6])
+    days = int(tss[6:8])
+    hours = int(tss[8:10])
+    minutes = int(tss[10:12])
+    seconds = int(tss[12:14])
+    time = datetime.datetime(year, month, days) + datetime.timedelta(weeks=0, days=0, hours=hours, minutes=minutes,  seconds=seconds, milliseconds=0, microseconds=0)
+    return time
+
+def change_index_by_ts(df):
+    index = []
+    for ts in df['ts']:
+        time = time_formatter(ts)
+        index.append(time)
+    df.index = pd.Series(index)
+
+def ret_time_index(df):
+    index = []
+    for ts in df['ts']:
+        time = time_formatter(ts)
+        index.append(time)
+    return pd.Series(index)
+
+def dropna_in_ts(data):
+    data = data[data['ts'].isnull().values == False]
+    return data
+
+def my_pearsonr(data):
+    # PearsonR
+    columns = [ col for col in data.columns]
+    pccss = []
+    for col in columns:
+        print(col)
+        x = data[col]
+        y = data['uarch.cpu_ipc']
+        print(type(x))
+        print(type(y))
+        pc = pearsonr(x, y)
+        pccss.append(pc[0])
+    return pd.Series(pccss, index=columns)
+
+
+if __name__ == '__main__':
+    csv_file = '/home/spark/nvme/Baidu/ps_instance_20200315.csv'
+    mcsv_file = '/home/spark/nvme/Baidu/ps_machine_20200315.csv'
+
+    df = pd.read_csv(csv_file)
+    mdf = pd.read_csv(mcsv_file)
+
+    df = dropna_in_ts(df)
+    mdf = dropna_in_ts(mdf)
+
+    change_index_by_ts(df)
+    change_index_by_ts(mdf)
+
+    df = df['03/15/2020':'03/16/2020']  #datetime filter
+    mdf = mdf['03/15/2020':'03/16/2020']
+
+
+    #machine_table = df.groupby('machine').groups.keys()
+    #service_table = df.groupby('service').groups.keys()
+    #container_table = df.groupby('container').groups.keys()
+
+
+    # TEST
+    # bjhw-ps-wwwsug9.bjhw pisces14.www 1000003.pisces14.www.hba
+    #data = df.groupby('machine').get_group('bjhw-ps-wwwsug9.bjhw').groupby('service').get_group('pisces14.www').groupby('container').get_group('1000003.pisces14.www.hba')
+    #change_index_by_ts(data)
+    #print(data)
+    #data.to_csv('data.csv')
+
+
+    # DATA SPLITING
+    #root = os.path.basename(csv_file).split('.csv')[0]
+    #print('********** processing... ', root, ' ***********')
+
+    #mgroups = df.groupby('machine')
+    #for machine in mgroups.groups.keys():
+
+    #    mkdir_p(os.path.join(root,machine))
+    #    sgroups = mgroups.get_group(machine).groupby('service')
+
+    #    for service in sgroups.groups.keys():
+
+    #        cgroups = sgroups.get_group(service).groupby('container')
+
+    #        for container in cgroups.groups.keys():
+
+    #             filename = service + '__' + container + '.csv'
+    #             filepath = os.path.join(root, machine, filename)
+
+    #             data = cgroups.get_group(container)
+    #             data = data[data['ts'].isnull().values == False]
+
+    #             change_index_by_ts(data)
+    #             data.to_csv(filepath)
+    #print('********** done ***********')
+
+
+    # PearsonR
+    service_groups = df.groupby('service')
+    for service in service_groups.groups.keys():
+
+        pearson_report = None
+        #service_list = ['pandora-agent-hba.www', 'bs_vip', 'bs_ext', 'bs_se']
+        #service_list = ['bs_se']
+        service_list = ['bs_vip']
+        if service not in service_list:
+            continue
+
+        container_groups = service_groups.get_group(service).groupby('container')
+
+        for container in container_groups.groups.keys():
+
+            data = container_groups.get_group(container)
+            machine = list(data.groupby('machine').groups.keys())[0]
+            mdata = mdf.groupby('machine').get_group(machine)
+            other_services = df.groupby('machine').get_group(machine)
+
+            # module level data
+            data['uarch.mem_stall_cycles / uarch.cpu_cycles'] = data['uarch.mem_stall_cycles'] / data['uarch.cpu_cycles']
+            data['Port 0,1,5,6 utilization'] = data['uarch.pipeline_port0_utilization'] + data['uarch.pipeline_port1_utilization'] + data['uarch.pipeline_port5_utilization'] + data['uarch.pipeline_port6_utilization']
+            data['Port 2,3,4,7 utilizaiton'] = data['uarch.pipeline_port2_utilization'] + data['uarch.pipeline_port3_utilization'] + data['uarch.pipeline_port4_utilization'] + data['uarch.pipeline_port7_utilization']
+
+            data = data[['uarch.cpu_ipc', 'uarch.tlb_itlb_mpki', 'uarch.tlb_dtlb_load_mpki', 'uarch.l1c_mpki', 'uarch.l1d_mpki', 'uarch.l3_mpki', 'uarch.l2_mpki', 'uarch.smt_pct_1smt_active', 'numa.mem_bw_local_ratio', 'numa.mem_bw_total', 'uarch.mem_load_per_instr', 'uarch.mem_store_per_instr', 'uarch.mem_stall_cycles / uarch.cpu_cycles', 'Port 0,1,5,6 utilization', 'Port 2,3,4,7 utilizaiton']]
+
+            # server level data
+            mdata['uarch.mem_stall_cycles / uarch.cpu_cycles'] = mdata['uarch.mem_stall_cycles'] / mdata['uarch.cpu_cycles']
+            mdata['Port 0,1,5,6 utilization'] = mdata['uarch.pipeline_port0_utilization'] + mdata['uarch.pipeline_port1_utilization'] + mdata['uarch.pipeline_port5_utilization'] + mdata['uarch.pipeline_port6_utilization']
+            mdata['Port 2,3,4,7 utilizaiton'] = mdata['uarch.pipeline_port2_utilization'] + mdata['uarch.pipeline_port3_utilization'] + mdata['uarch.pipeline_port4_utilization'] + mdata['uarch.pipeline_port7_utilization']
+
+            mdata = mdata[['uarch.cpu_ipc', 'uarch.cpu_util', 'uarch.l3_mpki', 'uarch.smt_pct_1smt_active', 'uarch.mem_stall_cycles / uarch.cpu_cycles', 'Port 0,1,5,6 utilization', 'Port 2,3,4,7 utilizaiton', 'numa.mem_bw_total']]
+
+            # server level data columns rename
+            mdata.rename(columns={'uarch.cpu_ipc': 'server.uarch.cpu_ipc', 'uarch.cpu_util': 'server.uarch.cpu_util', 'uarch.l3_mpki': 'server.uarch.l3_mpki', 'uarch.smt_pct_1smt_active': 'server.uarch.smt_pct_1smt_active', 'uarch.mem_stall_cycles / uarch.cpu_cycles': 'server.uarch.mem_stall_cycles / uarch.cpu_cycles', 'Port 0,1,5,6 utilization': 'server.Port 0,1,5,6 utilization', 'Port 2,3,4,7 utilizaiton': 'server.Port 2,3,4,7 utilizaiton', 'numa.mem_bw_total': 'server.numa.mem_bw_total'}, inplace=True)
+
+
+            # other modules data (cpu util)
+            osdata = None
+            other_service_groups = other_services.groupby('service')
+            for s in other_service_groups.groups.keys():
+                s_service_containers = other_service_groups.get_group(s).groupby('container')
+                for c in s_service_containers.groups.keys():
+                    ssdata = s_service_containers.get_group(c)
+
+                    if s == service and c == container:
+                        continue
+
+                    print('=== machine: === ', machine, ' === container: === ', c, ' === service: === ', s)
+                    # cpu util (other module)
+                    cpu_util = ssdata['uarch.cpu_util']
+                    # resample to 5mins
+                    cpu_util = cpu_util.resample('5T').mean()
+                    # data column rename
+                    newname = machine + '.' + c + '.' + s + '.uarch.cpu_util'
+                    cpu_util.rename(newname, inplace=True)
+
+                    # concat
+                    if osdata is None:
+                        osdata = cpu_util
+                    else:
+                        osdata = pd.concat([osdata, cpu_util], axis=1)
+
+
+            #DATA DUMP
+            #if osdata is not None:
+                #osdata.to_csv(service + '__other_modules_cpu_util.csv')
+            #data.to_csv(service + '__instance_rawdata.csv')
+            #mdata.to_csv(service + '__machine_rawdata.csv')
+            #other_services.to_csv(service + '__other_services_rawdata.csv')
+
+            # resample to 5mins (same as other modules' data)
+            data = data.resample('5T').mean()
+            mdata = mdata.resample('5T').mean()
+
+            # time slice
+            data = data['03/15/2020 20:00:00':'03/15/2020 22:00:00']
+            mdata = mdata['03/15/2020 20:00:00':'03/15/2020 22:00:00']
+            if osdata is not None:
+                osdata = osdata['03/15/2020 20:00:00':'03/15/2020 22:00:00']
+
+            # MaxMinScalar
+            data = (data-data.min())/(data.max()-data.min())
+            mdata = (mdata-mdata.min())/(mdata.max()-mdata.min())
+            if osdata is not None:
+                osdata = (osdata-osdata.min())/(osdata.max()-osdata.min())
+
+            # concat
+            if osdata is not None:
+                results = pd.concat([data, mdata, osdata], axis=1)
+            else:
+                results = pd.concat([data, mdata], axis=1)
+
+            # drop and fill NaN
+            results = results[results['uarch.cpu_ipc'].isnull().values == False]
+            results = results.fillna(0)
+
+            if len(results) < 2:
+                print('[WARNNING] ====== PASSED!! SERVICE: ' + service + ' CONTAINER: ' + container + ' ======')
+                continue
+
+            # PearsonR
+            pccss = my_pearsonr(results)
+            pccss.rename(service+'.'+container, inplace=True)
+
+            if pearson_report is None:
+                pearson_report = pccss
+            else:
+                pearson_report = pd.concat([pearson_report, pccss], axis=1)
+
+
+            #data.to_csv(service + '__' + container + '__' + machine + '__5min_instance_mean.csv')
+            #mdata.to_csv(service + '__' + container + '__' + machine + '__5min_machine_mean.csv')
+            #osdata.to_csv(service + '__' + container + '__' + machine + '__5min_other_services_mean.csv')
+            #results.to_csv(service + '__' + container + '__' + machine + '__5min_results.csv')
+            #pccss.to_csv(service + '__' + container + '__' + machine + '__5min_pearsonr.csv')
+
+            #metric = 'uarch.cpu_ipc'  # uarch.cpu_util,uarch.cpu_ipc
+            #data[metric].plot()
+            #break
+
+        #plt.savefig('figs/' + service + '_'+ metric + '.png')
+        #plt.clf()  #Clear figure
+        pearson_report.to_csv(service + '__ps_pearson_report_8_10.csv')
+```
