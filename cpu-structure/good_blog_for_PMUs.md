@@ -1,0 +1,2 @@
+- https://easyperf.net/blog/2018/06/01/PMU-counters-and-profiling-basics
+- https://easyperf.net/blog/2018/06/08/Advanced-profiling-topics-PEBS-and-LBR
